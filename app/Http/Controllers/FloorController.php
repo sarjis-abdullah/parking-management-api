@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Floor\IndexRequest;
+use App\Http\Requests\Floor\StoreRequest;
+use App\Http\Requests\Floor\UpdateRequest;
 use App\Http\Requests\StoreFloorRequest;
 use App\Http\Requests\UpdateFloorRequest;
 use App\Models\Floor;
@@ -11,7 +14,7 @@ class FloorController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         //
     }
@@ -27,7 +30,7 @@ class FloorController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreFloorRequest $request)
+    public function store(StoreRequest $request)
     {
         //
     }
@@ -51,7 +54,7 @@ class FloorController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFloorRequest $request, Floor $floor)
+    public function update(UpdateRequest $request, Floor $floor)
     {
         //
     }
