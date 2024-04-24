@@ -15,7 +15,8 @@ class Place extends Model
         'description',
         'status',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'deleted_by',
     ];
 
     public function categories()

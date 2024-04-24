@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTariffRequest;
+use App\Http\Requests\Tariff\IndexRequest;
+use App\Http\Requests\Tariff\StoreRequest;
+use App\Http\Requests\Tariff\UpdateRequest;
 use App\Http\Requests\UpdateTariffRequest;
 use App\Models\Tariff;
 
@@ -11,7 +14,7 @@ class TariffController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         //
     }
@@ -27,7 +30,7 @@ class TariffController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreTariffRequest $request)
+    public function store(StoreRequest $request)
     {
         //
     }
@@ -51,7 +54,7 @@ class TariffController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTariffRequest $request, Tariff $tariff)
+    public function update(UpdateRequest $request, Tariff $tariff)
     {
         //
     }

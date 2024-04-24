@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Place\IndexRequest;
+use App\Http\Requests\Place\StoreRequest;
+use App\Http\Requests\Place\UpdateRequest;
 use App\Http\Requests\StorePlaceRequest;
 use App\Http\Requests\UpdatePlaceRequest;
 use App\Models\Place;
@@ -11,7 +14,7 @@ class PlaceController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         //
     }
@@ -27,7 +30,7 @@ class PlaceController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePlaceRequest $request)
+    public function store(StoreRequest $request)
     {
         //
     }
@@ -51,7 +54,7 @@ class PlaceController
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePlaceRequest $request, Place $place)
+    public function update(UpdateRequest $request, Place $place)
     {
         //
     }
