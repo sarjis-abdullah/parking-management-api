@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTariffRequest;
 use App\Http\Requests\Tariff\IndexRequest;
 use App\Http\Requests\Tariff\StoreRequest;
 use App\Http\Requests\Tariff\UpdateRequest;
-use App\Http\Requests\UpdateTariffRequest;
 use App\Models\Tariff;
+use App\Repositories\Contracts\TariffInterface;
 
 class TariffController
 {
+    private TariffInterface $interface;
+
+    public function __construct(TariffInterface $interface)
+    {
+        $this->interface = $interface;
+    }
     /**
      * Display a listing of the resource.
      */

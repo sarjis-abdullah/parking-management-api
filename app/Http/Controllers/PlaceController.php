@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Place\IndexRequest;
 use App\Http\Requests\Place\StoreRequest;
 use App\Http\Requests\Place\UpdateRequest;
-use App\Http\Requests\StorePlaceRequest;
-use App\Http\Requests\UpdatePlaceRequest;
 use App\Models\Place;
+use App\Repositories\Contracts\PlaceInterface;
 
 class PlaceController
 {
+    private PlaceInterface $interface;
+
+    public function __construct(PlaceInterface $interface)
+    {
+        $this->interface = $interface;
+    }
     /**
      * Display a listing of the resource.
      */

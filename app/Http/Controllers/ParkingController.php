@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Parking\IndexRequest;
 use App\Http\Requests\Parking\StoreRequest;
 use App\Http\Requests\Parking\UpdateRequest;
-use App\Http\Requests\StoreParkingRequest;
-use App\Http\Requests\UpdateParkingRequest;
 use App\Models\Parking;
+use App\Repositories\Contracts\ParkingInterface;
 
 class ParkingController
 {
+    private ParkingInterface $interface;
+
+    public function __construct(ParkingInterface $interface)
+    {
+        $this->interface = $interface;
+    }
     /**
      * Display a listing of the resource.
      */

@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreParkingRateRequest;
-use App\Http\Requests\UpdateParkingRateRequest;
 use App\Models\ParkingRate;
+use App\Repositories\Contracts\ParkingRateInterface;
 
 class ParkingRateController
 {
+    private ParkingRateInterface $interface;
+
+    public function __construct(ParkingRateInterface $interface)
+    {
+        $this->interface = $interface;
+    }
     /**
      * Display a listing of the resource.
      */

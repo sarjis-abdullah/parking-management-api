@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Floor\IndexRequest;
 use App\Http\Requests\Floor\StoreRequest;
 use App\Http\Requests\Floor\UpdateRequest;
-use App\Http\Requests\StoreFloorRequest;
-use App\Http\Requests\UpdateFloorRequest;
 use App\Models\Floor;
+use App\Repositories\Contracts\FloorInterface;
 
 class FloorController
 {
+    private FloorInterface $floor;
+
+    public function __construct(FloorInterface $floor)
+    {
+        $this->floor = $floor;
+    }
     /**
      * Display a listing of the resource.
      */

@@ -5,12 +5,17 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Slot\IndexRequest;
 use App\Http\Requests\Slot\StoreRequest;
 use App\Http\Requests\Slot\UpdateRequest;
-use App\Http\Requests\StoreSlotRequest;
-use App\Http\Requests\UpdateSlotRequest;
 use App\Models\Slot;
+use App\Repositories\Contracts\SlotInterface;
 
 class SlotController
 {
+    private SlotInterface $interface;
+
+    public function __construct(SlotInterface $interface)
+    {
+        $this->interface = $interface;
+    }
     /**
      * Display a listing of the resource.
      */

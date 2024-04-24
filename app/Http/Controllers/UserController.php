@@ -9,7 +9,6 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\UserResourceCollection;
 use App\Models\User;
 use App\Repositories\Contracts\UserInterface;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController

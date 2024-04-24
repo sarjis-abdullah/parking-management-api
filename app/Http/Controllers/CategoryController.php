@@ -5,12 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Category\IndexRequest;
 use App\Http\Requests\Category\StoreRequest;
 use App\Http\Requests\Category\UpdateRequest;
-use App\Http\Requests\StoreCategoryRequest;
-use App\Http\Requests\UpdateCategoryRequest;
 use App\Models\Category;
+use App\Repositories\Contracts\CategoryInterface;
 
 class CategoryController
 {
+    private CategoryInterface $category;
+
+    public function __construct(CategoryInterface $category)
+    {
+        $this->category = $category;
+    }
+
     /**
      * Display a listing of the resource.
      */
