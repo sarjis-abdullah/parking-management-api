@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('place_id')->nullable();
             $table->string('status')->default('active');
             $table->dateTime('email_verified_at')->nullable();
+            $table->timestamps();
         });
     }
 
