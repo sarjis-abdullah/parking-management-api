@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\IndexRequest;
+use App\Http\Requests\User\RegisterRequest;
+use App\Http\Requests\User\UpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserResourceCollection;
 use App\Models\User;
@@ -21,7 +24,7 @@ class UserController
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(IndexRequest $request)
     {
         $list = $this->userInterface->findBy($request->all());
         return new UserResourceCollection($list);
@@ -30,12 +33,12 @@ class UserController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RegisterRequest $request)
     {
         return $this->register($request);
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
         if (empty($request->password)){
             $pass = Hash::make('start!23');
@@ -63,7 +66,7 @@ class UserController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateRequest $request, User $user)
     {
         $list = $this->userInterface->update($user, $request->validated());
         return new UserResource($list);
