@@ -4,7 +4,7 @@ services:
   #PHP Service
   app:
     build: ./php
-    container_name: app_restaurant_pos_service
+    container_name: app_parking_api
     restart: unless-stopped
     platform: linux/amd64
     environment:
@@ -21,7 +21,7 @@ services:
   #Nginx Service
   webserver:
     image: nginx:alpine
-    container_name: webserver_restaurant_pos_service
+    container_name: webserver_parking_api
     restart: unless-stopped
     ports:
       - "8190:80"
@@ -38,38 +38,38 @@ services:
   db:
     image: mysql:8.1
     platform: linux/amd64
-    container_name: db_restaurant_pos_service
+    container_name: db_parking_api
     restart: unless-stopped
     ports:
       - "3341:3306"
     environment:
-      MYSQL_DATABASE: restaurant_pos_service
-      MYSQL_USER: restaurant_pos_service
-      MYSQL_PASSWORD: restaurant_pos_service
+      MYSQL_DATABASE: parking_api
+      MYSQL_USER: parking_api
+      MYSQL_PASSWORD: parking_api
       MYSQL_ROOT_PASSWORD: root
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
-      - mysqldata_restaurant_pos_service:/var/lib/mysql/
+      - mysqldata_parking_api:/var/lib/mysql/
     networks:
       - app-network
 
   testdb:
     image: mysql:8.1
     platform: linux/amd64
-    container_name: db_restaurant_pos_service_test
+    container_name: db_parking_api_test
     restart: unless-stopped
     ports:
       - "3342:3306"
     environment:
-      MYSQL_DATABASE: restaurant_pos_service_test
-      MYSQL_USER: restaurant_pos_service_test
-      MYSQL_PASSWORD: restaurant_pos_service_test
+      MYSQL_DATABASE: parking_api_test
+      MYSQL_USER: parking_api_test
+      MYSQL_PASSWORD: parking_api_test
       MYSQL_ROOT_PASSWORD: root
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
     volumes:
-      - mysqldata_restaurant_pos_service_test:/var/lib/mysqltest/
+      - mysqldata_parking_api_test:/var/lib/mysqltest/
     networks:
       - app-network
 
@@ -98,7 +98,7 @@ networks:
     driver: bridge
 #Volumes
 volumes:
-  mysqldata_restaurant_pos_service:
+  mysqldata_parking_api:
     driver: local
-  mysqldata_restaurant_pos_service_test:
+  mysqldata_parking_api_test:
     driver: local

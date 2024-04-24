@@ -10,7 +10,7 @@ Route::get('/', function (Request $request) {
 
 Route::group(['prefix' => 'api/v1'], function () {
     Route::get('/', function (Request $request) {
-        return response()->json(['message' => 'INAIA Trading API.']);
+        return response()->json(['message' => 'INAIA Trading API.eerere']);
     });
 
     Route::group(['prefix' => 'instruments'], function () {
