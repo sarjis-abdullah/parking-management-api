@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $states  = array_column(\App\Enums\CategoryStatus::cases(), 'value');
-        Schema::create('categories', function (Blueprint $table) use ($states) {
+        $states  = array_column(\App\Enums\FloorStatus::cases(), 'value');
+        Schema::create('floors', function (Blueprint $table) use ($states) {
             $table->id();
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
-            $table->string('name');
-            $table->mediumText('description')->nullable();
-            $table->tinyInteger('limit_count')->default(1);
-            $table->enum('status', $states)->nullable();
+            $table->string('name'); //name
+            $table->tinyInteger('level')->default(0);
+            $table->string('remarks', 191)->nullable();
+            $table->enum('status', $states)->default('active');
             $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('floors');
     }
 };
