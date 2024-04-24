@@ -13,6 +13,8 @@ Route::group(['prefix' => 'api/v1'], function () {
         return response()->json(['message' => 'INAIA Trading API.eerere']);
     });
 
+    Route::apiResource('user', \App\Http\Controllers\UserController::class);
+
     Route::group(['prefix' => 'instruments'], function () {
         Route::get('/', 'InstrumentController@index');
         Route::get('/supported', 'InstrumentController@getListOfSupportedInstruments');
