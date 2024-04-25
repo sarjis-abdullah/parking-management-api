@@ -5,31 +5,26 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Floor\IndexRequest;
 use App\Http\Requests\Floor\StoreRequest;
 use App\Http\Requests\Floor\UpdateRequest;
+use App\Http\Resources\FloorResource;
+use App\Http\Resources\FloorResourceCollection;
 use App\Models\Floor;
 use App\Repositories\Contracts\FloorInterface;
 
 class FloorController
 {
-    private FloorInterface $floor;
+    private FloorInterface $interface;
 
-    public function __construct(FloorInterface $floor)
+    public function __construct(FloorInterface $interface)
     {
-        $this->floor = $floor;
+        $this->interface = $interface;
     }
     /**
      * Display a listing of the resource.
      */
     public function index(IndexRequest $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new FloorResourceCollection($list);
     }
 
     /**
@@ -37,7 +32,8 @@ class FloorController
      */
     public function store(StoreRequest $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new FloorResource($list);
     }
 
     /**
@@ -45,15 +41,7 @@ class FloorController
      */
     public function show(Floor $floor)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Floor $floor)
-    {
-        //
+        return new FloorResource($floor);
     }
 
     /**
@@ -61,7 +49,8 @@ class FloorController
      */
     public function update(UpdateRequest $request, Floor $floor)
     {
-        //
+        $list = $this->interface->update($floor, $request->all());
+        return new FloorResource($list);
     }
 
     /**
@@ -69,6 +58,7 @@ class FloorController
      */
     public function destroy(Floor $floor)
     {
-        //
+        $this->interface->delete($floor);
+        return response()->json(null, 204);
     }
 }

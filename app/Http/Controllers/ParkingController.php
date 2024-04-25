@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Parking\IndexRequest;
 use App\Http\Requests\Parking\StoreRequest;
 use App\Http\Requests\Parking\UpdateRequest;
+use App\Http\Resources\ParkingResource;
+use App\Http\Resources\ParkingResourceCollection;
 use App\Models\Parking;
 use App\Repositories\Contracts\ParkingInterface;
 
@@ -21,15 +23,8 @@ class ParkingController
      */
     public function index(IndexRequest $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new ParkingResourceCollection($list);
     }
 
     /**
@@ -37,7 +32,8 @@ class ParkingController
      */
     public function store(StoreRequest $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new ParkingResource($list);
     }
 
     /**
@@ -45,15 +41,7 @@ class ParkingController
      */
     public function show(Parking $parking)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Parking $parking)
-    {
-        //
+        return new ParkingResource($parking);
     }
 
     /**
@@ -61,7 +49,8 @@ class ParkingController
      */
     public function update(UpdateRequest $request, Parking $parking)
     {
-        //
+        $list = $this->interface->update($parking, $request->all());
+        return new ParkingResource($list);
     }
 
     /**
@@ -69,6 +58,7 @@ class ParkingController
      */
     public function destroy(Parking $parking)
     {
-        //
+        $this->interface->delete($parking);
+        return response()->json(null, 204);
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Tariff\IndexRequest;
 use App\Http\Requests\Tariff\StoreRequest;
 use App\Http\Requests\Tariff\UpdateRequest;
+use App\Http\Resources\TariffResource;
+use App\Http\Resources\TariffResourceCollection;
 use App\Models\Tariff;
 use App\Repositories\Contracts\TariffInterface;
 
@@ -21,15 +23,8 @@ class TariffController
      */
     public function index(IndexRequest $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new TariffResourceCollection($list);
     }
 
     /**
@@ -37,7 +32,8 @@ class TariffController
      */
     public function store(StoreRequest $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new TariffResource($list);
     }
 
     /**
@@ -45,15 +41,7 @@ class TariffController
      */
     public function show(Tariff $tariff)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Tariff $tariff)
-    {
-        //
+        return new TariffResource($tariff);
     }
 
     /**
@@ -61,7 +49,8 @@ class TariffController
      */
     public function update(UpdateRequest $request, Tariff $tariff)
     {
-        //
+        $list = $this->interface->update($tariff, $request->all());
+        return new TariffResource($list);
     }
 
     /**
@@ -69,6 +58,7 @@ class TariffController
      */
     public function destroy(Tariff $tariff)
     {
-        //
+        $this->interface->delete($tariff);
+        return response()->json(null, 204);
     }
 }

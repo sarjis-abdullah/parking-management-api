@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Category\IndexRequest;
 use App\Http\Requests\Category\StoreRequest;
 use App\Http\Requests\Category\UpdateRequest;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\CategoryResourceCollection;
 use App\Models\Category;
 use App\Repositories\Contracts\CategoryInterface;
 
 class CategoryController
 {
-    private CategoryInterface $category;
+    private CategoryInterface $interface;
 
-    public function __construct(CategoryInterface $category)
+    public function __construct(CategoryInterface $interface)
     {
-        $this->category = $category;
+        $this->interface = $interface;
     }
 
     /**
@@ -22,15 +24,8 @@ class CategoryController
      */
     public function index(IndexRequest $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new CategoryResourceCollection($list);
     }
 
     /**
@@ -38,7 +33,8 @@ class CategoryController
      */
     public function store(StoreRequest $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new CategoryResource($list);
     }
 
     /**
@@ -46,15 +42,7 @@ class CategoryController
      */
     public function show(Category $category)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        //
+        return new CategoryResource($category);
     }
 
     /**
@@ -62,7 +50,8 @@ class CategoryController
      */
     public function update(UpdateRequest $request, Category $category)
     {
-        //
+        $list = $this->interface->update($category, $request->all());
+        return new CategoryResource($list);
     }
 
     /**
@@ -70,6 +59,7 @@ class CategoryController
      */
     public function destroy(Category $category)
     {
-        //
+        $this->interface->delete($category);
+        return response()->json(null, 204);
     }
 }

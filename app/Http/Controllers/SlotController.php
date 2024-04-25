@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Slot\IndexRequest;
 use App\Http\Requests\Slot\StoreRequest;
 use App\Http\Requests\Slot\UpdateRequest;
+use App\Http\Resources\SlotResource;
+use App\Http\Resources\SlotResourceCollection;
 use App\Models\Slot;
 use App\Repositories\Contracts\SlotInterface;
 
@@ -21,15 +23,8 @@ class SlotController
      */
     public function index(IndexRequest $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new SlotResourceCollection($list);
     }
 
     /**
@@ -37,7 +32,8 @@ class SlotController
      */
     public function store(StoreRequest $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new SlotResource($list);
     }
 
     /**
@@ -45,15 +41,7 @@ class SlotController
      */
     public function show(Slot $slot)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Slot $slot)
-    {
-        //
+        return new SlotResource($slot);
     }
 
     /**
@@ -61,7 +49,8 @@ class SlotController
      */
     public function update(UpdateRequest $request, Slot $slot)
     {
-        //
+        $list = $this->interface->update($slot, $request->all());
+        return new SlotResource($list);
     }
 
     /**
@@ -69,6 +58,7 @@ class SlotController
      */
     public function destroy(Slot $slot)
     {
-        //
+        $this->interface->delete($slot);
+        return response()->json(null, 204);
     }
 }

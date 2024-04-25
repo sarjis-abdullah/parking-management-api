@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ParkingRate\IndexRequest;
+use App\Http\Requests\ParkingRate\StoreRequest;
+use App\Http\Requests\ParkingRate\UpdateRequest;
+use App\Http\Resources\ParkingRateResource;
+use App\Http\Resources\ParkingRateResourceCollection;
 use App\Models\ParkingRate;
 use App\Repositories\Contracts\ParkingRateInterface;
 
@@ -16,25 +21,19 @@ class ParkingRateController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new ParkingRateResourceCollection($list);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreParkingRateRequest $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new ParkingRateResource($list);
     }
 
     /**
@@ -42,23 +41,16 @@ class ParkingRateController
      */
     public function show(ParkingRate $parkingRate)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ParkingRate $parkingRate)
-    {
-        //
+        return new ParkingRateResource($parkingRate);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateParkingRateRequest $request, ParkingRate $parkingRate)
+    public function update(UpdateRequest $request, ParkingRate $parkingRate)
     {
-        //
+        $list = $this->interface->update($parkingRate, $request->all());
+        return new ParkingRateResource($list);
     }
 
     /**
@@ -66,6 +58,7 @@ class ParkingRateController
      */
     public function destroy(ParkingRate $parkingRate)
     {
-        //
+        $this->interface->delete($parkingRate);
+        return response()->json(null, 204);
     }
 }
