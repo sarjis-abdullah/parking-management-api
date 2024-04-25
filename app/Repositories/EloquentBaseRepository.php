@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class EloquentBaseRepository implements BaseRepository
@@ -142,6 +143,7 @@ class EloquentBaseRepository implements BaseRepository
      */
     public function save(array $data): \ArrayAccess
     {
+        $data['created_by'] = Auth::user()->id;
         return $this->model->create($data);
     }
 

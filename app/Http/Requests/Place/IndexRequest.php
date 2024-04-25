@@ -2,18 +2,11 @@
 
 namespace App\Http\Requests\Place;
 
+use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class IndexRequest extends FormRequest
+class IndexRequest extends Request
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +15,6 @@ class IndexRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
         ];
     }
 }

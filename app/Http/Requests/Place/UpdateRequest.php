@@ -2,18 +2,12 @@
 
 namespace App\Http\Requests\Place;
 
+use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateRequest extends FormRequest
+class UpdateRequest extends Request
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -21,8 +15,11 @@ class UpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $states  = array_column(\App\Enums\PlaceStatus::cases(), 'value');
         return [
-            //
+            'name' => 'string',
+            'description'  => 'string',
+            'status'  => [Rule::in($states)],
         ];
     }
 }

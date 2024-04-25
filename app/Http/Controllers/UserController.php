@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\User\IndexRequest;
+use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterRequest;
 use App\Http\Requests\User\UpdateRequest;
 use App\Http\Resources\UserResource;
@@ -26,6 +27,7 @@ class UserController
     public function index(IndexRequest $request)
     {
         $list = $this->userInterface->findBy($request->all());
+        dd(User::all());
         return new UserResourceCollection($list);
     }
 
@@ -78,5 +80,22 @@ class UserController
     {
         $this->userInterface->delete($user);
         return response()->json(null, 204);
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if ($user instanceof User) {
+            if (Hash::check($request->get('password'), $user->password)) {
+                $token = $user->createToken('Password Grant Client')->accessToken;
+
+                return response(['accessToken' => $token, 'user' => new UserResource($user)], 200);
+            } else {
+                return response(['message' => 'password mismatch error'], 422);
+            }
+        } else {
+            return response(['message' => 'No user in this credentials'], 422);
+        }
     }
 }

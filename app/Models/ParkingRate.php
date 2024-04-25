@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ParkingRate extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'tariff_id',
+        'rate',
+        'duration',
+    ];
 }
