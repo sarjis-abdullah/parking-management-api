@@ -143,6 +143,7 @@ class EloquentBaseRepository implements BaseRepository
      */
     public function save(array $data): \ArrayAccess
     {
+        if ($this->model->getTable() != 'users')
         $data['created_by'] = Auth::user()->id;
         return $this->model->create($data);
     }

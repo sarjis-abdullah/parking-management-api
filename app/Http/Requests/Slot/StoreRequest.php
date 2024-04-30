@@ -2,18 +2,11 @@
 
 namespace App\Http\Requests\Slot;
 
+use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class StoreRequest extends Request
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +15,13 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string',
+            'floor_id' => 'required|integer|exists:floors,id',
+            'place_id' => 'required|integer|exists:places,id',
+            'category_id' => 'required|integer|exists:categories,id',
+            'identity' => 'required|string',
+            'remarks' => 'nullable|string',
+//            'status' => 'required|integer|between:0,1',
         ];
     }
 }

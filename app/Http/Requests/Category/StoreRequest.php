@@ -19,7 +19,7 @@ class StoreRequest extends Request
             'description' => 'string',
             'place_id' => 'required|integer|exists:places,id',
             'limit_count' => 'integer',
-            'status' => 'required|in:active,inactive',
+//            'status' => 'required|in:active,inactive',
         ];
     }
 }

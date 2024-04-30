@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\UserResourceCollection;
 use App\Models\User;
 use App\Repositories\Contracts\UserInterface;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController
@@ -27,14 +28,13 @@ class UserController
     public function index(IndexRequest $request)
     {
         $list = $this->userInterface->findBy($request->all());
-        dd(User::all());
         return new UserResourceCollection($list);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(RegisterRequest $request)
+    public function store(Request $request)
     {
         return $this->register($request);
     }
@@ -43,8 +43,11 @@ class UserController
     {
         if (empty($request->password)){
             $pass = Hash::make('start!23');
+        }else {
+            $pass = Hash::make($request->password);
         }
         $list = $this->userInterface->save([...$request->all(), 'password' => $pass]);
+        return $list;
         return new UserResource($list);
     }
 
