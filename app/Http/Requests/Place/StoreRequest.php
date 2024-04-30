@@ -20,7 +20,7 @@ class StoreRequest extends Request
         return [
             'name' => 'required|string',
             'description'  => 'string',
-            'place_id'  => 'required|exists:places,id',
+//            'place_id'  => 'required|exists:places,id',
 //            'status'  => ['required', Rule::in($states)],
         ];
     }

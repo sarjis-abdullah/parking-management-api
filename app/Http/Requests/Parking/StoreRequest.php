@@ -2,18 +2,11 @@
 
 namespace App\Http\Requests\Parking;
 
+use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class StoreRequest extends Request
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +15,12 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'vehicle_no' => 'required|string',
+            'driver_name' => 'string',
+            'driver_mobile' => 'string',
+            'place_id' => 'required|integer|exists:places,id',
+            'category_id' => 'required|integer|exists:categories,id',
+            'slot_id' => 'required|integer|exists:slots,id',
         ];
     }
 }

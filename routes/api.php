@@ -23,7 +23,7 @@ Route::group(['prefix' => 'api/v1'], function () {
         Route::apiResource('category', \App\Http\Controllers\CategoryController::class);
         Route::apiResource('slot', \App\Http\Controllers\SlotController::class);
         Route::apiResource('tariff', \App\Http\Controllers\TariffController::class);
-        Route::apiResource('parking', \App\Http\Controllers\PlaceController::class);
+        Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
         Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
     });
 });
