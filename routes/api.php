@@ -2,10 +2,44 @@
 
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function (Request $request) {
-    return response()->json(['message' => 'INAIA Trading API. hello']);
+    return response()->json(['message' => 'Hello World!'], 200);
+});
+Route::get('/migrate', function (Request $request) {
+    Artisan::call('migrate');
+
+    return 'Migration completed successfully.';
+});
+Route::get('/migrate-fresh', function (Request $request) {
+    Artisan::call('migrate:fresh');
+    return 'Migration fresh successfully.';
+});
+
+Route::get('/cleareverything', function () {
+    $clearcache = Artisan::call('cache:clear');
+    echo "Cache cleared<br>";
+
+    $clearview = Artisan::call('view:clear');
+    echo "View cleared<br>";
+
+    $clearconfig = Artisan::call('config:clear');
+    $clearconfig = Artisan::call('passport:install');
+    return "Config cleared<br>";
+});
+
+Route::get('/install-passport', function () {
+    // Execute the passport:install Artisan command
+    Artisan::call('passport:install');
+
+    // Capture the output of the command
+    $output = Artisan::output();
+
+    // Output a message indicating the installation
+    echo "Passport installed: <br>";
+    echo $output;
 });
 
 
