@@ -4,17 +4,20 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use Laravel\Passport\Console\ClientCommand;
+use Laravel\Passport\Console\InstallCommand;
+use Laravel\Passport\Console\KeysCommand;
 
 Route::get('/', function (Request $request) {
     return response()->json(['message' => 'Hello World!'], 200);
 });
 Route::get('/migrate', function (Request $request) {
-    Artisan::call('migrate');
+    Artisan::call('migrate', array('--force' => true));
 
     return 'Migration completed successfully.';
 });
 Route::get('/migrate-fresh', function (Request $request) {
-    Artisan::call('migrate:fresh');
+    Artisan::call('migrate:fresh', array('--force' => true));
     return 'Migration fresh successfully.';
 });
 
@@ -30,22 +33,43 @@ Route::get('/cleareverything', function () {
     return "Config cleared<br>";
 });
 
-Route::get('/install-passport', function () {
-    // Execute the passport:install Artisan command
-    Artisan::call('passport:install');
-
+Route::get('/db:seed', function () {
+    Artisan::call('db:seed');
     // Capture the output of the command
     $output = Artisan::output();
 
     // Output a message indicating the installation
-    echo "Passport installed: <br>";
+    echo "Database seeded: <br>";
     echo $output;
+});
+
+Route::get('/install-passport', function () {
+    //before this, added below lines to auth service provider
+    /*
+     $this->commands([
+            InstallCommand::class,
+            ClientCommand::class,
+            KeysCommand::class,
+        ]);
+     */
+    define('STDIN',fopen("php://stdin","r"));
+    // Execute the passport:install Artisan command
+    Artisan::call('passport:install', [
+        '--force' => true
+    ]);
+
+    // Capture the output of the command
+//    $output = Artisan::output();
+
+    // Output a message indicating the installation
+    echo "Passport installed: <br>";
+//    echo $output;
 });
 
 
 Route::group(['prefix' => 'api/v1'], function () {
     Route::get('/', function (Request $request) {
-        return response()->json(['message' => 'INAIA Trading API.eerere']);
+        return response()->json(['message' => 'Hello API']);
     });
 
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
