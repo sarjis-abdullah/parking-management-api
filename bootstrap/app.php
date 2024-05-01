@@ -23,6 +23,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(ModifyHeader::class);
+
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
@@ -40,6 +46,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) {
             return response()->json((['status' => 403, 'message' => $exception->getMessage() ? $exception->getMessage() : "You don't have access!"]), 404);
+        });
+
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $exception, Request $request) {
+            return response()->json((['status' => 403, 'message' => $exception->getMessage() ? $exception->getMessage() : "You don't have access!"]), 403);
         });
 
     })->create();

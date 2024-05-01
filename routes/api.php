@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\RolesAndPermissions;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
@@ -75,13 +76,32 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
     Route::post('/register', [UserController::class, 'register'])->name('user.register');
     Route::middleware(['auth:api'])->group(function () {
-        Route::apiResource('user', UserController::class);
-        Route::apiResource('place', \App\Http\Controllers\PlaceController::class);
-        Route::apiResource('floor', \App\Http\Controllers\FloorController::class);
-        Route::apiResource('category', \App\Http\Controllers\CategoryController::class);
-        Route::apiResource('slot', \App\Http\Controllers\SlotController::class);
-        Route::apiResource('tariff', \App\Http\Controllers\TariffController::class);
-        Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
-        Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
+
+        Route::middleware(
+            ['role:'.RolesAndPermissions::ADMIN.'|'.RolesAndPermissions::OPERATOR]
+        )->group(function () {
+            Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
+            Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
+
+            Route::get('place', [\App\Http\Controllers\PlaceController::class, 'index']);
+            Route::get('floor', [\App\Http\Controllers\FloorController::class, 'index']);
+            Route::get('category', [\App\Http\Controllers\CategoryController::class, 'index']);
+            Route::get('slot', [\App\Http\Controllers\SlotController::class, 'index']);
+            Route::get('tariff', [\App\Http\Controllers\TariffController::class, 'index']);
+        });
+
+        Route::middleware(
+            ['role:'.RolesAndPermissions::ADMIN]
+        )->group(function () {
+
+
+            Route::apiResource('user', UserController::class);
+            Route::apiResource('place', \App\Http\Controllers\PlaceController::class)->except('index');
+            Route::apiResource('floor', \App\Http\Controllers\FloorController::class)->except('index');
+            Route::apiResource('category', \App\Http\Controllers\CategoryController::class)->except('index');
+            Route::apiResource('slot', \App\Http\Controllers\SlotController::class)->except('index');
+            Route::apiResource('tariff', \App\Http\Controllers\TariffController::class)->except('index');
+        });
+
     });
 });
