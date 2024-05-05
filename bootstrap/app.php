@@ -28,6 +28,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'DNS1D' => 'Milon\Barcode\Facades\DNS1DFacade',
+            'DNS2D' => 'Milon\Barcode\Facades\DNS2DFacade',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
