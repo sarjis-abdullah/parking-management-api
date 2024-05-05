@@ -78,7 +78,7 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::middleware(['auth:api'])->group(function () {
 
         Route::middleware(
-            ['role:'.RolesAndPermissions::ADMIN.'|'.RolesAndPermissions::OPERATOR]
+            ['role:'.RolesAndPermissions::ADMIN.'|'.RolesAndPermissions::OPERATOR.'|'.RolesAndPermissions::SUPER_ADMIN]
         )->group(function () {
             Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
             Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
@@ -91,7 +91,7 @@ Route::group(['prefix' => 'api/v1'], function () {
         });
 
         Route::middleware(
-            ['role:'.RolesAndPermissions::ADMIN]
+            ['role:'.RolesAndPermissions::ADMIN.'|'.RolesAndPermissions::SUPER_ADMIN]
         )->group(function () {
 
 

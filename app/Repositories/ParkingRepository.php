@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Enums\SlotStatus;
+use App\Exceptions\CustomException;
+use App\Exceptions\CustomValidationException;
 use App\Models\Slot;
 use App\Repositories\Contracts\InstrumentSupportedRepository;
 use App\Repositories\Contracts\ParkingInterface;
@@ -27,6 +29,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             ]);
             return parent::save($data);
         }
-        throw new Exception("Slot is already occupied.");
+
+        throw new CustomValidationException("Slot is already occupied.", 400, 'slot_id');
     }
 }

@@ -19,7 +19,7 @@ class StoreRequest extends Request
             'floor_id' => 'required|integer|exists:floors,id',
             'place_id' => 'required|integer|exists:places,id',
             'category_id' => 'required|integer|exists:categories,id',
-            'identity' => 'required|string',
+            'identity' => 'nullable|string',
             'remarks' => 'nullable|string',
 //            'status' => 'required|integer|between:0,1',
         ];

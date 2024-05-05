@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Parking extends Model
 {
@@ -28,4 +29,17 @@ class Parking extends Model
         'updated_by',
         'deleted_by',
     ];
+
+    public function place(): BelongsTo
+    {
+        return $this->belongsTo(Place::class);
+    }
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function slot(): BelongsTo
+    {
+        return $this->belongsTo(Slot::class);
+    }
 }

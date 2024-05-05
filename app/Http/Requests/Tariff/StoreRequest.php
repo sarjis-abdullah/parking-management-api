@@ -20,7 +20,7 @@ class StoreRequest extends Request
             'place_id' => 'required|integer|exists:places,id',
             'category_id' => 'required|integer|exists:categories,id',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
+            'end_date' => 'nullable|date|after:start_date',
         ];
     }
 }
