@@ -19,7 +19,7 @@ class StoreRequest extends Request
         $states  = array_column(\App\Enums\PlaceStatus::cases(), 'value');
         return [
             'name' => 'required|string',
-            'description'  => 'string',
+            'description'  => 'nullable',
 //            'place_id'  => 'required|exists:places,id',
 //            'status'  => ['required', Rule::in($states)],
         ];

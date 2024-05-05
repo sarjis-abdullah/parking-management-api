@@ -16,7 +16,7 @@ class StoreRequest extends Request
     {
         return [
             'name' => 'required|string|unique:categories',
-            'remarks' => 'string',
+            'remarks' => 'nullable',
             'place_id' => 'required|integer|exists:places,id',
         ];
     }

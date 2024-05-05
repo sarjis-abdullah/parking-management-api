@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum ParkingStatus: String
+enum SlotStatus: String
 {
     case available = "available";
     case disabled = "disabled";
