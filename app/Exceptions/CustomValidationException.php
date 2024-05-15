@@ -9,18 +9,23 @@ class CustomValidationException extends Exception
 {
     public $message;
     public $code;
-    public $key;
+    public $errors;
 
-    public function __construct($message, $code,$key)
+    public function __construct($message, $code, $errors)
     {
         $this->message = $message;
         $this->code = $code;
-        $this->key = $key;
+        $this->errors = $errors;
         parent::__construct($message, $code);
     }
 
-    public function render(): JsonResponse
+    public function render(Request $request): JsonResponse
     {
+        return response()->json([
+            'message' => $this->getMessage(),
+            'errors' => $this->errors,
+        ], $this->code);
+
         return response()->json([
             'message' => $this->message,
             'key' => $this->key,

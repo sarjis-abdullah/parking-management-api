@@ -29,7 +29,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             ]);
             return parent::save($data);
         }
-
-        throw new CustomValidationException("Slot is already occupied.", 400, 'slot_id');
+        throw new CustomValidationException('The name field must be an array.', 422, [
+            'slot' => ['Slot is already occupied.'],
+        ]);
     }
 }
