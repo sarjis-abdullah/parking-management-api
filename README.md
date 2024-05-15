@@ -34,4 +34,12 @@ To run unit test:
 
 Schema hints diagram
 
+Schema example:
+
+`https://dbdiagram.io/d/6628e21003593b6b61d7f74a`
+
+`2. vendor/bin/phpunit`
+
+Schema hints diagram
+
 ![alt text](image.png)

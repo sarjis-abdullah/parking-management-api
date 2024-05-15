@@ -20,17 +20,13 @@ return new class extends Migration
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
             $table->foreignId('slot_id')->constrained('slots')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
             $table->string('barcode', 191)->unique();
             $table->string('vehicle_no', 191);
             $table->string('driver_name', 191)->nullable();
             $table->string('driver_mobile', 191)->nullable();
             $table->dateTime('in_time');
             $table->dateTime('out_time')->nullable();
-            $table->enum('payment_method', $payment_methods)->default(PaymentMethod::cash->value);
-            $table->decimal('payable_amount', 8, 2)->default(0.00);
-            $table->decimal('paid_amount', 8, 2)->default(0.00);
-            $table->decimal('due_amount', 8, 2)->default(0.00);
-            $table->enum('status', $states)->default(TariffStatus::enabled->value);
             $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();

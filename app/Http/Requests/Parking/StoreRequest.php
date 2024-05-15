@@ -22,6 +22,9 @@ class StoreRequest extends Request
             'place_id' => 'required|integer|exists:places,id',
             'category_id' => 'required|integer|exists:categories,id',
             'slot_id' => 'required|integer|exists:slots,id',
+            'floor_id' => 'required|integer|exists:floors,id',
+//            'payment.method' => 'required|integer',
+//            'payment.paid_amount' => 'required|integer',
         ];
     }
 }
