@@ -20,6 +20,7 @@ class SlotResource extends Resource
             'remarks'=> $this->remarks,
             'status'=> $this->status,
             'created_by'=> $this->created_by,
+            'floor_id'=> $this->floor_id,
             'createdByUser'  => $this->needToInclude($request, 'p.createdByUser') ? new UserResource($this->createdByUser) : null,
             'floor'  => $this->needToInclude($request, 's.floor') ? new FloorResource($this->floor) : null,
             'category'  => $this->needToInclude($request, 's.category') ? new CategoryResource($this->category) : null,

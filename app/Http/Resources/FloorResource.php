@@ -25,6 +25,7 @@ class FloorResource extends Resource
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,
             'place'  => $this->needToInclude($request, 'f.place') ? new PlaceResource($this->place) : null,
+            'slots'  => $this->needToInclude($request, 'f.slots') ? new SlotResourceCollection($this->slots) : null,
         ];
     }
 }

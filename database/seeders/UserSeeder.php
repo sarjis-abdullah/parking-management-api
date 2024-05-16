@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             'Admin2', 'admin@khulshimart.com', 'khulshi@321', RolesAndPermissions::ADMIN
         );
         $this->createUser(
-            'Operator|Nishan', 'khalid@gmail.com', 'Start123!', RolesAndPermissions::OPERATOR
+            'Operator|Nishan', 'khalid@gmail.com', '@Test123', RolesAndPermissions::OPERATOR
         );
     }
 

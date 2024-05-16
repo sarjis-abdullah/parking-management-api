@@ -23,9 +23,10 @@ class UpdateRequest extends Request
 //            'category_id' => 'required|integer|exists:categories,id',
 //            'slot_id' => 'required|integer|exists:slots,id',
 //            'floor_id' => 'required|integer|exists:floors,id',
-//            'parking_id' => 'required|exists:parkings,id',
-            'payment.method' => 'required|integer',
-            'payment.paid_amount' => 'required|integer',
+            'out_time' => 'required|date_format:Y-m-d H:i:s',
+            'payment' => 'required',
+            'payment.method' => 'required|string',
+            'payment.paid_amount' => 'required|numeric',
         ];
     }
 }

@@ -17,6 +17,7 @@ class ParkingResource extends Resource
     {
         $image = DNS1D::getBarcodePNG($this->barcode, 'C39+', 50, 1366);
         return [
+            'id' => $this->id,
             'barcode_image' => $image,
             'place_id' => $this->place_id,
             'category_id' => $this->category_id,

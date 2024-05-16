@@ -38,7 +38,9 @@ Schema example:
 
 `https://dbdiagram.io/d/6628e21003593b6b61d7f74a`
 
-`2. vendor/bin/phpunit`
+Passport client (after installation or after migrate):
+
+`php artisan passport:client --personal`
 
 Schema hints diagram
 

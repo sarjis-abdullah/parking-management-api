@@ -15,7 +15,7 @@ class StoreRequest extends Request
     public function rules(): array
     {
         return [
-            'name' => 'required|string|unique:categories',
+            'name' => 'required|string',
             'description' => 'nullable',
             'place_id' => 'required|integer|exists:places,id',
             'limit_count' => 'integer',

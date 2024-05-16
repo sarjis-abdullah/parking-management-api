@@ -33,4 +33,12 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'slot' => ['Slot is already occupied.'],
         ]);
     }
+
+    public function update(\ArrayAccess $model, array $data): \ArrayAccess
+    {
+        Slot::find($model->slot_id)->update([
+            'status' => SlotStatus::available->value
+        ]);
+        return parent::update($model, $data);
+    }
 }

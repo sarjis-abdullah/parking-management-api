@@ -14,6 +14,7 @@ class Parking extends Model
         'place_id',
         'category_id',
         'slot_id',
+        'floor_id',
         'barcode',
         'vehicle_no',
         'driver_name',
