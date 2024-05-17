@@ -58,6 +58,7 @@ Route::get('/install-passport', function () {
     Artisan::call('passport:install', [
         '--force' => true
     ]);
+    Artisan::call('passport:client --personal');
 
     // Capture the output of the command
 //    $output = Artisan::output();

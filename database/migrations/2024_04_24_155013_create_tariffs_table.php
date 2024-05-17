@@ -14,8 +14,8 @@ return new class extends Migration
         $states  = array_column(\App\Enums\TariffStatus::cases(), 'value');
         Schema::create('tariffs', function (Blueprint $table) use ($states) {
             $table->id();
-            $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('place_id')->nullable()->constrained('places');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('name');
             $table->decimal('min_amount', 8, 2)->nullable();
             $table->datetime('start_date')->default(now());

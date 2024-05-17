@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $this->createUser(
-            'Super Admin',  'sarjis.m.a@gmail.com', 'Start123!', RolesAndPermissions::SUPER_ADMIN
+            'Super Admin',  'sarjis.m.a@gmail.com', '@Test123', RolesAndPermissions::SUPER_ADMIN
         );
         $this->createUser(
             'Admin1',  'it@khulshimart.com', 'mplit@2024', RolesAndPermissions::ADMIN

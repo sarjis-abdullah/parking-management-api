@@ -14,7 +14,6 @@ return new class extends Migration
         $states  = array_column(\App\Enums\CategoryStatus::cases(), 'value');
         Schema::create('categories', function (Blueprint $table) use ($states) {
             $table->id();
-            $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
             $table->string('name');
             $table->mediumText('description')->nullable();
             $table->tinyInteger('limit_count')->default(1);

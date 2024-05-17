@@ -36,6 +36,8 @@ class ParkingResource extends Resource
             'place'  => $this->needToInclude($request, 'p.place') ? new PlaceResource($this->place) : null,
             'category'  => $this->needToInclude($request, 'p.category') ? new CategoryResource($this->category) : null,
             'slot'  => $this->needToInclude($request, 'p.slot') ? new SlotResource($this->slot) : null,
+            'payments'  => $this->needToInclude($request, 'p.payments') ? new PaymentResourceCollection($this->payments) : null,
+            'payment'  => $this->needToInclude($request, 'p.payment') ? new PaymentResource($this->payment) : null,
         ];
     }
 }

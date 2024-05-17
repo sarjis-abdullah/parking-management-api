@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\ParkingStatus;
 use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
@@ -74,7 +75,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     {
         $data['barcode'] = uniqid();
         $data['in_time'] = now();
-        $data['status'] = 'in-parking';
+        $data['status'] = ParkingStatus::in_parking->value;
         $slot = Slot::find($data['slot_id']);
         if ($model->status == 'in-parking'){
             throw new CustomValidationException('The vehicle is already in parking slot.', 422, [
@@ -110,8 +111,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'method' => $data['payment']['method'],
             'paid_amount' => $data['payment']['paid_amount'],
             'received_by' => auth()->id(),
+            'parking_id' => $model->id,
         ]);
-        $data['status'] = 'not-in-parking';
+        $data['status'] = ParkingStatus::not_in_parking->value;
         return parent::update($model, $data);
     }
 }

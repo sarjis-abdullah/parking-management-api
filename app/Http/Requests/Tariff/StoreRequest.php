@@ -17,8 +17,8 @@ class StoreRequest extends Request
     {
         return [
             'name' => 'required|string',
-            'place_id' => 'required|integer|exists:places,id',
-            'category_id' => 'required|integer|exists:categories,id',
+            'place_id' => 'nullable|integer|exists:places,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after:start_date',
         ];

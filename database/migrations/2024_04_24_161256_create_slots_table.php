@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
             $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('name', 191);
             $table->string('identity', 191)->nullable();
             $table->string('remarks', 191)->nullable();

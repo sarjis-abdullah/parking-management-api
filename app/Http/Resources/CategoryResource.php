@@ -24,7 +24,6 @@ class CategoryResource extends Resource
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,
-            'place'  => $this->needToInclude($request, 'c.place') ? new PlaceResource($this->place) : null,
         ];
     }
 }

@@ -16,5 +16,6 @@ class Payment extends Model
         'due_amount',
         'status',
         'received_by',
+        'parking_id',
     ];
 }
