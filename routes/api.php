@@ -83,6 +83,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
             Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
 
+            Route::put('parking-check-out/{parking}', [\App\Http\Controllers\ParkingController::class, 'handleCheckout']);
             Route::get('place', [\App\Http\Controllers\PlaceController::class, 'index']);
             Route::get('floor', [\App\Http\Controllers\FloorController::class, 'index']);
             Route::get('category', [\App\Http\Controllers\CategoryController::class, 'index']);

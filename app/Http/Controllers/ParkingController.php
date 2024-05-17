@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Parking\CheckoutRequest;
 use App\Http\Requests\Parking\IndexRequest;
 use App\Http\Requests\Parking\StoreRequest;
 use App\Http\Requests\Parking\UpdateRequest;
@@ -50,6 +51,14 @@ class ParkingController
     public function update(UpdateRequest $request, Parking $parking)
     {
         $list = $this->interface->update($parking, $request->all());
+        return new ParkingResource($list);
+    }
+    /**
+     * Update the specified resource in storage.
+     */
+    public function handleCheckout(CheckoutRequest $request, Parking $parking)
+    {
+        $list = $this->interface->handleCheckout($parking, $request->all());
         return new ParkingResource($list);
     }
 

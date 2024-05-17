@@ -21,6 +21,7 @@ class Parking extends Model
         'driver_mobile',
         'in_time',
         'out_time',
+        'status',
         'created_by',
         'updated_by',
         'deleted_by',

@@ -16,6 +16,8 @@ class IndexRequest extends Request
     {
         return [
             'barcode' => 'string|nullable',
+            'vehicle_no' => 'string',
+            'query' => 'string',
         ];
     }
 }

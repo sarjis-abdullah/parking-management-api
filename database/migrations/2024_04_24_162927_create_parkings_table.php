@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('driver_mobile', 191)->nullable();
             $table->dateTime('in_time');
             $table->dateTime('out_time')->nullable();
+            $table->string('status')->nullable();
             $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();

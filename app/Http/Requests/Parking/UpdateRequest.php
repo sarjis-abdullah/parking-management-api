@@ -16,17 +16,17 @@ class UpdateRequest extends Request
     public function rules(): array
     {
         return [
-//            'vehicle_no' => 'required|string',
-//            'driver_name' => 'nullable|string',
-//            'driver_mobile' => 'nullable|string',
-//            'place_id' => 'required|integer|exists:places,id',
-//            'category_id' => 'required|integer|exists:categories,id',
-//            'slot_id' => 'required|integer|exists:slots,id',
-//            'floor_id' => 'required|integer|exists:floors,id',
-            'out_time' => 'required|date_format:Y-m-d H:i:s',
-            'payment' => 'required',
-            'payment.method' => 'required|string',
-            'payment.paid_amount' => 'required|numeric',
+            'vehicle_no' => 'required|string',
+            'driver_name' => 'nullable|string',
+            'driver_mobile' => 'nullable|string',
+            'place_id' => 'required|integer|exists:places,id',
+            'category_id' => 'required|integer|exists:categories,id',
+            'slot_id' => 'required|integer|exists:slots,id',
+            'floor_id' => 'required|integer|exists:floors,id',
+//            'out_time' => 'required|date_format:Y-m-d H:i:s',
+//            'payment' => 'required',
+//            'payment.method' => 'required|string',
+//            'payment.paid_amount' => 'required|numeric',
         ];
     }
 }
