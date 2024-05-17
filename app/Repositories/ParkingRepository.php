@@ -25,8 +25,6 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         if(isset($searchCriteria['query'])) {
             $queryBuilder = $queryBuilder->where('vehicle_no', 'like', '%'.$searchCriteria['query'] . '%');
-//                ->orWhere('email', 'like', $searchCriteria['query'] . '%')
-//                ->orWhere('phone', 'like', $searchCriteria['query'] . '%');
             unset($searchCriteria['query']);
         }
 
@@ -95,8 +93,16 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         }
     }
 
+    /**
+     * @throws CustomValidationException
+     */
     public function handleCheckout(\ArrayAccess $model, array $data): \ArrayAccess
     {
+        if (isset($model->out_time)){
+            throw new CustomValidationException('Vehicle is already checked-out..', 422, [
+                'vehicle' => ['Vehicle is already checked-out.'],
+            ]);
+        }
         Slot::find($model->slot_id)->update([
             'status' => SlotStatus::available->value
         ]);
@@ -106,7 +112,6 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'received_by' => auth()->id(),
         ]);
         $data['status'] = 'not-in-parking';
-//        $data['received_by'] = auth()->id();
         return parent::update($model, $data);
     }
 }
