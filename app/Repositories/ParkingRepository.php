@@ -30,6 +30,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             $queryBuilder = $queryBuilder->where('vehicle_no', 'like', '%'.$searchCriteria['query'] . '%');
             unset($searchCriteria['query']);
         }
+        $queryBuilder = $queryBuilder->where('status', '!=', ParkingStatus::checked_out->value);
 
         $queryBuilder = $queryBuilder->where(function ($query) use ($searchCriteria) {
             $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);
@@ -119,11 +120,12 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
      */
     public function handleCheckout(\ArrayAccess $model, array $data): \ArrayAccess
     {
-        if (isset($model->out_time)){
+        if (isset($model->out_time) || $model->status == ParkingStatus::checked_out->value){
             throw new CustomValidationException('Vehicle is already checked-out..', 422, [
                 'vehicle' => ['Vehicle is already checked-out.'],
             ]);
         }
+
         DB::beginTransaction();
 
         Slot::find($model->slot_id)->update([
