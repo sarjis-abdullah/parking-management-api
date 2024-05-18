@@ -23,6 +23,7 @@ class StoreRequest extends Request
             'category_id' => 'required|integer|exists:categories,id',
             'slot_id' => 'required|integer|exists:slots,id',
             'floor_id' => 'required|integer|exists:floors,id',
+            'tariff_id' => 'nullable|integer|exists:tariffs,id',
 //            'payment.method' => 'required|integer',
 //            'payment.paid_amount' => 'required|integer',
         ];

@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum ParkingRateType: string
 {
-    case half_hourly        = '30';
-    case hourly         = '60';
+    case half_hourly        = 'half_hourly';
+    case hourly         = 'hourly';
     case fixed        = 'fixed';
 }

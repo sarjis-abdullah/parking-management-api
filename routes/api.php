@@ -17,6 +17,20 @@ Route::get('/migrate', function (Request $request) {
 
     return 'Migration completed successfully.';
 });
+Route::get('/install', function (Request $request) {
+    Artisan::call('migrate:fresh', array('--force' => true));
+
+    $user = \App\Models\User::find(1);
+    if (!$user instanceof \App\Models\User)
+        Artisan::call('db:seed');
+
+    define('STDIN',fopen("php://stdin","r"));
+    Artisan::call('passport:install', [
+        '--force' => true
+    ]);
+    Artisan::call('passport:client --personal');
+    return 'Installation completed successfully.';
+});
 Route::get('/migrate-fresh', function (Request $request) {
     Artisan::call('migrate:fresh', array('--force' => true));
     return 'Migration fresh successfully.';

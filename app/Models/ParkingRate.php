@@ -12,6 +12,6 @@ class ParkingRate extends Model
     protected $fillable = [
         'tariff_id',
         'rate',
-        'duration',
+        'type',
     ];
 }

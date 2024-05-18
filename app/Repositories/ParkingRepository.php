@@ -8,6 +8,7 @@ use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
 use App\Models\Payment;
 use App\Models\Slot;
+use App\Models\Tariff;
 use App\Repositories\Contracts\InstrumentSupportedRepository;
 use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\PlaceInterface;
@@ -57,6 +58,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $data['in_time'] = now();
         $slot = Slot::find($data['slot_id']);
         $data['status'] = 'in-parking';
+        if (!isset($data['tariff_id'])){
+            $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
+        }
         if ($slot->status != SlotStatus::occupied->value){
             Slot::find($data['slot_id'])->update([
                 'status' => SlotStatus::occupied->value

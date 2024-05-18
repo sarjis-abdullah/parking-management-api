@@ -18,9 +18,11 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('name');
             $table->decimal('min_amount', 8, 2)->nullable();
-            $table->datetime('start_date')->default(now());
+            $table->datetime('start_date')->nullable();
             $table->datetime('end_date')->nullable();
             $table->enum('status', $states)->default('enabled');
+            $table->boolean('default')->default(false);
+            $table->string('type')->default('half-hourly');
             $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();

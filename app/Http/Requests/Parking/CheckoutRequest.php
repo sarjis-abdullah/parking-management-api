@@ -16,6 +16,7 @@ class CheckoutRequest extends Request
     {
         return [
             'out_time' => 'required|date_format:Y-m-d H:i:s',
+            'duration' => 'required|integer',
             'payment' => 'required',
             'payment.method' => 'required|string',
             'payment.paid_amount' => 'required|numeric',

@@ -16,11 +16,22 @@ class StoreRequest extends Request
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
+            'name' => 'required|string|unique:tariffs,name',
+            'default' => 'boolean',
             'place_id' => 'nullable|integer|exists:places,id',
             'category_id' => 'nullable|integer|exists:categories,id',
-            'start_date' => 'required|date',
+            'start_date' => 'nullable|date',
+            'payment_rates' => 'required|array',
+            'payment_rates.*.rate' => 'required|numeric|between:1,1000000',
+            'type' => 'string',
             'end_date' => 'nullable|date|after:start_date',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'payment_rates.*.rate' => 'rate',
         ];
     }
 }

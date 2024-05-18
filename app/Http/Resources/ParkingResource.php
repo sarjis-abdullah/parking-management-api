@@ -33,11 +33,14 @@ class ParkingResource extends Resource
             'paid_amount' => $this->paid_amount,
             'due_amount' => $this->due_amount,
             'status' => $this->status,
+            'duration' => $this->duration, //in minute
             'place'  => $this->needToInclude($request, 'p.place') ? new PlaceResource($this->place) : null,
             'category'  => $this->needToInclude($request, 'p.category') ? new CategoryResource($this->category) : null,
             'slot'  => $this->needToInclude($request, 'p.slot') ? new SlotResource($this->slot) : null,
             'payments'  => $this->needToInclude($request, 'p.payments') ? new PaymentResourceCollection($this->payments) : null,
             'payment'  => $this->needToInclude($request, 'p.payment') ? new PaymentResource($this->payment) : null,
+            'tariff'  => $this->needToInclude($request, 'p.tariff') ? new TariffResource($this->tariff) : null,
+            'floor'  => $this->needToInclude($request, 'p.floor') ? new FloorResource($this->floor) : null,
         ];
     }
 }

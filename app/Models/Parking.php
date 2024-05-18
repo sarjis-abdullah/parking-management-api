@@ -17,6 +17,7 @@ class Parking extends Model
         'category_id',
         'slot_id',
         'floor_id',
+        'tariff_id',
         'barcode',
         'vehicle_no',
         'driver_name',
@@ -24,6 +25,7 @@ class Parking extends Model
         'in_time',
         'out_time',
         'status',
+        'duration',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -48,5 +50,13 @@ class Parking extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+    public function tariff(): BelongsTo
+    {
+        return $this->belongsTo(Tariff::class);
+    }
+    public function floor(): BelongsTo
+    {
+        return $this->belongsTo(Floor::class);
     }
 }

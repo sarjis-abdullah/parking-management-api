@@ -14,7 +14,6 @@ return new class extends Migration
         $durations  = array_column(\App\Enums\ParkingRateDuration::cases(), 'value');
         Schema::create('parking_rates', function (Blueprint $table) use ($durations) {
             $table->id();
-            $table->string('type')->default('half-hourly');
             $table->decimal('rate', 8, 2);
             $table->foreignId('tariff_id')->constrained('tariffs')->onDelete('cascade');
             $table->timestamps();

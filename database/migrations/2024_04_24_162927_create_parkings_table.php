@@ -21,12 +21,14 @@ return new class extends Migration
             $table->foreignId('slot_id')->constrained('slots')->onDelete('cascade');
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
+            $table->foreignId('tariff_id')->constrained('tariffs')->onDelete('cascade');
             $table->string('barcode', 191)->unique();
             $table->string('vehicle_no', 191);
             $table->string('driver_name', 191)->nullable();
             $table->string('driver_mobile', 191)->nullable();
             $table->dateTime('in_time');
             $table->dateTime('out_time')->nullable();
+            $table->integer('duration')->nullable();
             $table->string('status')->nullable()->default('');
             $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
