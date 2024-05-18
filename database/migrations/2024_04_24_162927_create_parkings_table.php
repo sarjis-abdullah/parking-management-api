@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('vehicle_no', 191);
             $table->string('driver_name', 191)->nullable();
             $table->string('driver_mobile', 191)->nullable();
-            $table->dateTime('in_time');
+            $table->dateTime('in_time')->nullable();
             $table->dateTime('out_time')->nullable();
             $table->integer('duration')->nullable();
             $table->string('status')->nullable()->default('');

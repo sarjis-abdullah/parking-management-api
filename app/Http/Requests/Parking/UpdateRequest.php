@@ -23,6 +23,7 @@ class UpdateRequest extends Request
             'category_id' => 'required|integer|exists:categories,id',
             'slot_id' => 'required|integer|exists:slots,id',
             'floor_id' => 'required|integer|exists:floors,id',
+            'tariff_id' => 'nullable|integer',
 //            'out_time' => 'required|date_format:Y-m-d H:i:s',
 //            'payment' => 'required',
 //            'payment.method' => 'required|string',

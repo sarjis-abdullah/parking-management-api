@@ -14,6 +14,7 @@ use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\PlaceInterface;
 use App\Repositories\Contracts\UserInterface;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 
 class ParkingRepository extends EloquentBaseRepository implements ParkingInterface
@@ -54,18 +55,25 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
      */
     public function save(array $data): \ArrayAccess
     {
+        DB::beginTransaction();
         $data['barcode'] = uniqid();
         $data['in_time'] = now();
         $slot = Slot::find($data['slot_id']);
-        $data['status'] = 'in-parking';
+        $data['status'] = ParkingStatus::checked_in->value;
+
         if (!isset($data['tariff_id'])){
             $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
         }
         if ($slot->status != SlotStatus::occupied->value){
+
+
             Slot::find($data['slot_id'])->update([
                 'status' => SlotStatus::occupied->value
             ]);
-            return parent::save($data);
+            $item = parent::save($data);
+
+            DB::commit();
+            return $item;
         }
         throw new CustomValidationException('The name field must be an array.', 422, [
             'slot' => ['Slot is already occupied.'],
@@ -79,18 +87,26 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     {
         $data['barcode'] = uniqid();
         $data['in_time'] = now();
-        $data['status'] = ParkingStatus::in_parking->value;
+        $data['status'] = ParkingStatus::checked_in->value;
+        if (!isset($data['tariff_id'])){
+            $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
+        }
         $slot = Slot::find($data['slot_id']);
-        if ($model->status == 'in-parking'){
+        if ($model->status == ParkingStatus::checked_in->value){
             throw new CustomValidationException('The vehicle is already in parking slot.', 422, [
                 'status' => ['The vehicle is already in parking slot.'],
             ]);
         }
         elseif ($slot->status != SlotStatus::occupied->value){
+            DB::beginTransaction();
+
             Slot::find($data['slot_id'])->update([
                 'status' => SlotStatus::occupied->value
             ]);
-            return parent::update($model, $data);
+            $item = parent::update($model, $data);
+
+            DB::commit();
+            return $item;
         } else {
             throw new CustomValidationException('Slot is already occupied..', 422, [
                 'slot' => ['Slot is already occupied.'],
@@ -108,6 +124,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                 'vehicle' => ['Vehicle is already checked-out.'],
             ]);
         }
+        DB::beginTransaction();
+
         Slot::find($model->slot_id)->update([
             'status' => SlotStatus::available->value
         ]);
@@ -117,7 +135,12 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'received_by' => auth()->id(),
             'parking_id' => $model->id,
         ]);
-        $data['status'] = ParkingStatus::not_in_parking->value;
-        return parent::update($model, $data);
+        $data['status'] = ParkingStatus::checked_out->value;
+
+        $item = parent::update($model, [...$data, 'in_time' => null, 'out_time' => null]);
+
+        DB::commit();
+
+        return $item;
     }
 }
