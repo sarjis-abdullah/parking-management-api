@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('memberships', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 191);
+            $table->string('name', 191)->nullable();
             $table->string('contact_number', 191);
-            $table->string('type', 191);
+            $table->foreignId( 'membership_type_id')->nullable()->constrained('membership_types');
             $table->integer('points')->default(0);
             $table->timestamps();
         });
