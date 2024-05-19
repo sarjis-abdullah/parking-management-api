@@ -9,6 +9,7 @@ use App\Exceptions\CustomValidationException;
 use App\Models\Payment;
 use App\Models\Slot;
 use App\Models\Tariff;
+use App\Models\Vehicle;
 use App\Repositories\Contracts\InstrumentSupportedRepository;
 use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\PlaceInterface;
@@ -60,14 +61,22 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $data['barcode'] = uniqid();
         $data['in_time'] = now();
         $slot = Slot::find($data['slot_id']);
-        $data['status'] = ParkingStatus::checked_in->value;
+
+        $oldVehicle = Vehicle::where('number', $data['vehicle_no'])->first();
+        $this->checkVehicleCheckedInToThrowError($oldVehicle);
+        $vehicle = Vehicle::create([
+            'number' => $data['vehicle_no'],
+            'driver_name' => $data['driver_name'] ?? null,
+            'driver_mobile' => $data['driver_mobile'] ?? null,
+            'category_id' => $data['category_id'],
+            'status' => ParkingStatus::checked_in->value,
+        ]);
+        $data['vehicle_id'] = $vehicle->id;
 
         if (!isset($data['tariff_id'])){
             $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
         }
         if ($slot->status != SlotStatus::occupied->value){
-
-
             Slot::find($data['slot_id'])->update([
                 'status' => SlotStatus::occupied->value
             ]);
@@ -86,31 +95,52 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
      */
     public function update(\ArrayAccess $model, array $data): \ArrayAccess
     {
-        $data['barcode'] = uniqid();
-        $data['in_time'] = now();
-        $data['status'] = ParkingStatus::checked_in->value;
-        if (!isset($data['tariff_id'])){
-            $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
-        }
-        $slot = Slot::find($data['slot_id']);
-        if ($model->status == ParkingStatus::checked_in->value){
-            throw new CustomValidationException('The vehicle is already in parking slot.', 422, [
-                'status' => ['The vehicle is already in parking slot.'],
+//        $data['barcode'] = uniqid();
+//        $data['in_time'] = now();
+//        $data['status'] = ParkingStatus::checked_in->value;
+//        DB::beginTransaction();
+//        if (!isset($data['tariff_id'])){
+//            $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
+//        }
+//        $slot = Slot::find($data['slot_id']);
+//
+//        $vehicle = Vehicle::find($model->vehicle_id);
+//        $this->checkVehicleCheckedInToThrowError($vehicle);
+//        if ($slot->status != SlotStatus::occupied->value){
+//            Slot::find($data['slot_id'])->update([
+//                'status' => SlotStatus::occupied->value
+//            ]);
+//            $item = parent::update($model, $data);
+//
+//            DB::commit();
+//            return $item;
+//        } else {
+//            throw new CustomValidationException('Slot is already occupied..', 422, [
+//                'slot' => ['Slot is already occupied.'],
+//            ]);
+//        }
+    }
+
+    /**
+     * @throws CustomValidationException
+     */
+    protected function checkVehicleCheckedInToThrowError($vehicle): void
+    {
+        if ($vehicle instanceof Vehicle && $vehicle->status == ParkingStatus::checked_in->value){
+            throw new CustomValidationException('The vehicle is already in checked-in.', 422, [
+                'status' => ['The vehicle is already in checked-in.'],
             ]);
         }
-        elseif ($slot->status != SlotStatus::occupied->value){
-            DB::beginTransaction();
+    }
 
-            Slot::find($data['slot_id'])->update([
-                'status' => SlotStatus::occupied->value
-            ]);
-            $item = parent::update($model, $data);
-
-            DB::commit();
-            return $item;
-        } else {
-            throw new CustomValidationException('Slot is already occupied..', 422, [
-                'slot' => ['Slot is already occupied.'],
+    /**
+     * @throws CustomValidationException
+     */
+    protected function checkVehicleCheckedOutToThrowError($vehicle): void
+    {
+        if ($vehicle instanceof Vehicle && $vehicle->status == ParkingStatus::checked_out->value){
+            throw new CustomValidationException('The vehicle is already checked-out.', 422, [
+                'status' => ['The vehicle is already checked-out.'],
             ]);
         }
     }
@@ -120,13 +150,10 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
      */
     public function handleCheckout(\ArrayAccess $model, array $data): \ArrayAccess
     {
-        if (isset($model->out_time) || $model->status == ParkingStatus::checked_out->value){
-            throw new CustomValidationException('Vehicle is already checked-out..', 422, [
-                'vehicle' => ['Vehicle is already checked-out.'],
-            ]);
-        }
-
         DB::beginTransaction();
+
+        $vehicle = Vehicle::find($model->vehicle_id);
+        $this->checkVehicleCheckedOutToThrowError($vehicle);
 
         Slot::find($model->slot_id)->update([
             'status' => SlotStatus::available->value
@@ -136,10 +163,13 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'paid_amount' => $data['payment']['paid_amount'],
             'received_by' => auth()->id(),
             'parking_id' => $model->id,
+            'paid_by_vehicle_id' => $model->vehicle_id,
         ]);
-        $data['status'] = ParkingStatus::checked_out->value;
+        $vehicle->update([
+            'status' => ParkingStatus::checked_out->value,
+        ]);
 
-        $item = parent::update($model, [...$data, 'in_time' => null, 'out_time' => null]);
+        $item = parent::update($model, $data);
 
         DB::commit();
 
