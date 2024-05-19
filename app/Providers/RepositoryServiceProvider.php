@@ -12,6 +12,7 @@ use App\Models\Place;
 use App\Models\Slot;
 use App\Models\Tariff;
 use App\Models\User;
+use App\Models\Vehicle;
 use App\Repositories\CategoryRepository;
 use App\Repositories\Contracts\CategoryInterface;
 use App\Repositories\Contracts\FloorInterface;
@@ -22,6 +23,7 @@ use App\Repositories\Contracts\PlaceInterface;
 use App\Repositories\Contracts\SlotInterface;
 use App\Repositories\Contracts\TariffInterface;
 use App\Repositories\Contracts\UserInterface;
+use App\Repositories\Contracts\VehicleInterface;
 use App\Repositories\EloquentInstrumentSupportedRepository;
 use App\Repositories\FloorRepository;
 use App\Repositories\ParkingRateRepository;
@@ -30,6 +32,7 @@ use App\Repositories\PlaceRepository;
 use App\Repositories\SlotRepository;
 use App\Repositories\TariffRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\VehicleRepository;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -59,5 +62,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SlotInterface::class, fn() => new SlotRepository(new Slot()));
         $this->app->bind(TariffInterface::class, fn() => new TariffRepository(new Tariff()));
         $this->app->bind(PlaceInterface::class, fn() => new PlaceRepository(new Place()));
+        $this->app->bind(VehicleInterface::class, fn() => new VehicleRepository(new Vehicle()));
     }
 }

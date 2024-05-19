@@ -21,17 +21,11 @@ class ParkingResource extends Resource
             'barcode_image' => $image,
             'place_id' => $this->place_id,
             'category_id' => $this->category_id,
+            'vehicle_id' => $this->vehicle_id,
             'slot_id' => $this->slot_id,
             'barcode' => $this->barcode,
-            'vehicle_no' => $this->vehicle_no,
-            'driver_name' => $this->driver_name,
-            'driver_mobile' => $this->driver_mobile,
             'in_time' => $this->in_time,
             'out_time' => $this->out_time,
-            'payment_method' => $this->payment_method,
-            'payable_amount' => $this->payable_amount,
-            'paid_amount' => $this->paid_amount,
-            'due_amount' => $this->due_amount,
             'status' => $this->status,
             'duration' => $this->duration, //in minute
             'place'  => $this->needToInclude($request, 'p.place') ? new PlaceResource($this->place) : null,
@@ -41,6 +35,7 @@ class ParkingResource extends Resource
             'payment'  => $this->needToInclude($request, 'p.payment') ? new PaymentResource($this->payment) : null,
             'tariff'  => $this->needToInclude($request, 'p.tariff') ? new TariffResource($this->tariff) : null,
             'floor'  => $this->needToInclude($request, 'p.floor') ? new FloorResource($this->floor) : null,
+            'vehicle'  => $this->needToInclude($request, 'p.vehicle') ? new VehicleResource($this->vehicle) : null,
         ];
     }
 }

@@ -15,5 +15,6 @@ class Vehicle extends Model
         'driver_mobile',
         'status',
         'membership_id',
+        'category_id',
     ];
 }

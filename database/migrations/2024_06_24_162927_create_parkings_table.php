@@ -13,9 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $states  = array_column(TariffStatus::cases(), 'value');
-        $payment_methods  = array_column(PaymentMethod::cases(), 'value');
-        Schema::create('parkings', function (Blueprint $table) use ($states, $payment_methods) {
+        Schema::create('parkings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
             $table->foreignId('slot_id')->constrained('slots')->onDelete('cascade');

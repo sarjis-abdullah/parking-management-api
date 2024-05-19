@@ -17,8 +17,9 @@ return new class extends Migration
             $table->decimal('payable_amount', 8, 2)->default(0.00);
             $table->decimal('paid_amount', 8, 2)->default(0.00);
             $table->decimal('due_amount', 8, 2)->default(0.00);
-            $table->string('status')->default(\App\Enums\TariffStatus::enabled->value);
+            $table->string('status')->default('pending');
             $table->foreignId( 'received_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId( 'paid_by_vehicle_id')->constrained('vehicles')->onDelete('cascade');
             $table->foreignId( 'parking_id')->nullable()->constrained('parkings')->nullOnDelete();
             $table->timestamps();
         });

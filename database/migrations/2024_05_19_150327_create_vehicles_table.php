@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('driver_mobile', 191)->nullable();
             $table->string('status')->nullable()->default('checked-in');
             $table->foreignId('membership_id')->nullable()->constrained('memberships');
+            $table->foreignId('category_id')->nullable()->constrained('categories');
             $table->timestamps();
         });
     }

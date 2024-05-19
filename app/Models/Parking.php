@@ -18,6 +18,7 @@ class Parking extends Model
         'slot_id',
         'floor_id',
         'tariff_id',
+        'vehicle_id',
         'barcode',
         'in_time',
         'out_time',
@@ -54,5 +55,9 @@ class Parking extends Model
     public function floor(): BelongsTo
     {
         return $this->belongsTo(Floor::class);
+    }
+    public function vehicle(): BelongsTo
+    {
+        return $this->belongsTo(Vehicle::class);
     }
 }

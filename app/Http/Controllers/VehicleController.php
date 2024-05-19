@@ -2,25 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Vehicle\IndexRequest;
+use App\Http\Resources\VehicleResource;
+use App\Http\Resources\VehicleResourceCollection;
 use App\Models\Vehicle;
+use App\Repositories\Contracts\VehicleInterface;
 use Illuminate\Http\Request;
 
 class VehicleController
 {
+    private VehicleInterface $interface;
+
+    public function __construct(VehicleInterface $interface)
+    {
+        $this->interface = $interface;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request): VehicleResourceCollection
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $list = $this->interface->findBy($request->all());
+        return new VehicleResourceCollection($list);
     }
 
     /**
@@ -28,7 +31,8 @@ class VehicleController
      */
     public function store(Request $request)
     {
-        //
+        $list = $this->interface->save($request->all());
+        return new VehicleResource($list);
     }
 
     /**
@@ -36,15 +40,7 @@ class VehicleController
      */
     public function show(Vehicle $vehicle)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Vehicle $vehicle)
-    {
-        //
+        return new VehicleResource($vehicle);
     }
 
     /**
@@ -52,7 +48,8 @@ class VehicleController
      */
     public function update(Request $request, Vehicle $vehicle)
     {
-        //
+        $list = $this->interface->update($vehicle, $request->all());
+        return new VehicleResource($list);
     }
 
     /**
@@ -60,6 +57,7 @@ class VehicleController
      */
     public function destroy(Vehicle $vehicle)
     {
-        //
+        $this->interface->delete($vehicle);
+        return response()->json(null, 204);
     }
 }

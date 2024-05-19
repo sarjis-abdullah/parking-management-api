@@ -17,5 +17,6 @@ class Payment extends Model
         'status',
         'received_by',
         'parking_id',
+        'paid_by_vehicle_id',
     ];
 }

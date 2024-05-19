@@ -47,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (AccessDeniedHttpException $exception, Request $request) {
-            return response()->json((['status' => 403, 'message' => $exception->getMessage() ? $exception->getMessage() : "You don't have access!"]), 404);
+            return response()->json((['status' => 403, 'message' => $exception->getMessage() ? $exception->getMessage() : "You don't have access!"]), 403);
         });
 
         $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $exception, Request $request) {

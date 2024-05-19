@@ -95,6 +95,7 @@ Route::group(['prefix' => 'api/v1'], function () {
         Route::middleware(
             ['role:'.RolesAndPermissions::ADMIN.'|'.RolesAndPermissions::OPERATOR.'|'.RolesAndPermissions::SUPER_ADMIN]
         )->group(function () {
+            Route::apiResource('vehicle', \App\Http\Controllers\VehicleController::class);
             Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
             Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
 
