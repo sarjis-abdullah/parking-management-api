@@ -5,16 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
-enum SubscriptionType: string {
-    case BASIC = 'Basic';
-    case STANDARD = 'Standard';
-    case PREMIUM = 'Premium';
-    case GOLD = 'Gold';
-    case PLATINUM = 'Platinum';
-    case FAMILY = 'Family';
-    case CORPORATE = 'Corporate';
-}
 class MembershipType extends Model
 {
     use HasFactory;
@@ -23,4 +13,9 @@ class MembershipType extends Model
         'name',
         'min_points',
     ];
+
+    public function memberships(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Membership::class);
+    }
 }

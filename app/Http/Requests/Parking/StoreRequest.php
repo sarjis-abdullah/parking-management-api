@@ -16,7 +16,7 @@ class StoreRequest extends Request
     public function rules(): array
     {
         return [
-            'vehicle_no' => 'required|string|unique:parkings,vehicle_no',
+            'vehicle_no' => 'required|string|unique:vehicles,number',
             'driver_name' => 'nullable|string',
             'driver_mobile' => 'nullable|string',
             'place_id' => 'required|integer|exists:places,id',

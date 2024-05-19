@@ -15,4 +15,9 @@ class Membership extends Model
         'membership_type_id',
         'points',
     ];
+
+    public function membershipType(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(MembershipType::class);
+    }
 }

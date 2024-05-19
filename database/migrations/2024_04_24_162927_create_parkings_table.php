@@ -23,13 +23,11 @@ return new class extends Migration
             $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
             $table->foreignId('tariff_id')->constrained('tariffs')->onDelete('cascade');
             $table->string('barcode', 191)->unique();
-            $table->string('vehicle_no', 191);
-            $table->string('driver_name', 191)->nullable();
-            $table->string('driver_mobile', 191)->nullable();
             $table->dateTime('in_time')->nullable();
             $table->dateTime('out_time')->nullable();
             $table->integer('duration')->nullable();
             $table->string('status')->nullable()->default('');
+            $table->foreignId( 'vehicle_id')->nullable()->constrained('vehicles');
             $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
