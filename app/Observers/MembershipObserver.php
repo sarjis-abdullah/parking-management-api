@@ -13,7 +13,7 @@ class MembershipObserver
     public function created(Membership $membership): void
     {
         // Retrieve the appropriate membership type based on points
-        $membershipType = MembershipType::where('min_points', '<=', $membership->points)
+        $membershipType = MembershipType::where('min_points', '<=', $membership->points + 1)
             ->orderBy('min_points', 'desc')
             ->first();
 
@@ -26,7 +26,8 @@ class MembershipObserver
      */
     public function updated(Membership $membership): void
     {
-        //
+        dd(67890);
+
     }
 
     /**

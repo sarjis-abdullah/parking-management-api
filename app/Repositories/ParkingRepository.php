@@ -6,6 +6,7 @@ use App\Enums\ParkingStatus;
 use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
+use App\Models\Membership;
 use App\Models\Payment;
 use App\Models\Slot;
 use App\Models\Tariff;
@@ -64,14 +65,28 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         $oldVehicle = Vehicle::where('number', $data['vehicle_no'])->first();
         $this->checkVehicleCheckedInToThrowError($oldVehicle);
-        $vehicle = Vehicle::create([
+        $vehicleData = [
             'number' => $data['vehicle_no'],
             'driver_name' => $data['driver_name'] ?? null,
             'driver_mobile' => $data['driver_mobile'] ?? null,
             'category_id' => $data['category_id'],
             'status' => ParkingStatus::checked_in->value,
-        ]);
-        $data['vehicle_id'] = $vehicle->id;
+        ];
+        $vehicleId = null;
+        if ($oldVehicle instanceof Vehicle){
+            $oldVehicle->update($vehicleData);
+            $vehicleId = $oldVehicle->id;
+        }else {
+            $vehicle = Vehicle::create($vehicleData);
+            $vehicleId = $vehicle->id;
+        }
+//        if ($vehicle->membership_id){
+//            $membership = Membership::find($vehicle->membership_id);
+//            $membership->update([
+//                'points' => $membership->points + 5,
+//            ]);
+//        }
+        $data['vehicle_id'] = $vehicleId;
 
         if (!isset($data['tariff_id'])){
             $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
