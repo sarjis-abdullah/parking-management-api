@@ -2,18 +2,11 @@
 
 namespace App\Http\Requests\Vehicle;
 
+use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreRequest extends FormRequest
+class StoreRequest extends Request
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +15,9 @@ class StoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'number' => 'required|string|unique:vehicles,number',
+            'driver_mobile' => 'string',
+            'membership_id' => 'string|exists:memberships,id',
         ];
     }
 }

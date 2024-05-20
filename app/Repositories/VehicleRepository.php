@@ -3,6 +3,8 @@
 namespace App\Repositories;
 
 use App\Enums\ParkingStatus;
+use App\Exceptions\CustomValidationException;
+use App\Models\Membership;
 use App\Repositories\Contracts\VehicleInterface;
 
 class VehicleRepository extends EloquentBaseRepository implements VehicleInterface
@@ -38,5 +40,22 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
         } else {
             return $queryBuilder->get();
         }
+    }
+
+    /**
+     * @throws CustomValidationException
+     */
+    public function update(\ArrayAccess $model, array $data): \ArrayAccess
+    {
+        if ($model->membership_id && isset($data['membership_id'])) {
+            unset($data['membership_id']);
+            throw new CustomValidationException('This vehicle is already added to membership list.', 422, [
+                'membership' => ['This vehicle is already added to membership list.'],
+            ]);
+        }else if (isset($data['membership_id'])){
+            $data['points'] = 5;
+
+        }
+        return parent::update($model, $data);
     }
 }

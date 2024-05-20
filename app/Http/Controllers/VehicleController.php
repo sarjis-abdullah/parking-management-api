@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Vehicle\IndexRequest;
+use App\Http\Requests\Vehicle\StoreRequest;
+use App\Http\Requests\Vehicle\UpdateRequest;
 use App\Http\Resources\VehicleResource;
 use App\Http\Resources\VehicleResourceCollection;
 use App\Models\Vehicle;
@@ -29,7 +31,7 @@ class VehicleController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         $list = $this->interface->save($request->all());
         return new VehicleResource($list);
@@ -46,7 +48,7 @@ class VehicleController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vehicle $vehicle)
+    public function update(UpdateRequest $request, Vehicle $vehicle)
     {
         $list = $this->interface->update($vehicle, $request->all());
         return new VehicleResource($list);

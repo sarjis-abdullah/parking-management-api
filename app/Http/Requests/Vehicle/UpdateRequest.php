@@ -2,27 +2,25 @@
 
 namespace App\Http\Requests\Vehicle;
 
+use App\Http\Requests\Request;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateRequest extends FormRequest
+class UpdateRequest extends Request
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
-    {
-        return false;
-    }
-
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
+        $vehicle = $this->route('vehicle');
         return [
-            //
+            'number' => Rule::unique('vehicles')->ignore($vehicle->number, 'number'),
+            'driver_mobile' => 'string',
+            'membership_id' => 'string|exists:memberships,id|unique:vehicles,membership_id',
         ];
     }
 }

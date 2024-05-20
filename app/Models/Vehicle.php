@@ -16,5 +16,6 @@ class Vehicle extends Model
         'status',
         'membership_id',
         'category_id',
+        'points',
     ];
 }
