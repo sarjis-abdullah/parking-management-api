@@ -19,7 +19,6 @@ use App\Repositories\Contracts\UserInterface;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-
 class ParkingRepository extends EloquentBaseRepository implements ParkingInterface
 {
     /*
@@ -81,16 +80,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             }
             $oldVehicle->update($vehicleData);
 
-            if ($oldVehicle->membership_id){
-                $membershipType = MembershipType::where('min_points', '<=', $oldVehicle->points)
-                    ->orderBy('min_points', 'desc')
-                    ->first();
-
-                // Update the membership_type_id
-                $membership = Membership::find($oldVehicle->membership_id);
-                $membership->membership_type_id = $membershipType ? $membershipType->id : null;
-                $membership->save();
-            }
+            addMembershipTypeToVehicleMembership($oldVehicle);
 
             $vehicleId = $oldVehicle->id;
         }else {
@@ -201,5 +191,19 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         DB::commit();
 
         return $item;
+    }
+}
+
+function addMembershipTypeToVehicleMembership($vehicle): void
+{
+    if ($vehicle instanceof Vehicle && $vehicle->membership_id) {
+        $membershipType = MembershipType::where('min_points', '<=', $vehicle->points)
+            ->orderBy('min_points', 'desc')
+            ->first();
+
+        // Update the membership_type_id
+        $membership = Membership::find($vehicle->membership_id);
+        $membership->membership_type_id = $membershipType ? $membershipType->id : null;
+        $membership->save();
     }
 }

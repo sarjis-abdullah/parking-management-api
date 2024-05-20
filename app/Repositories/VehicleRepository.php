@@ -51,7 +51,7 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
         }
         $vehicle = parent::save($data);
 
-        $this->addMembershipType($vehicle);
+        addMembershipTypeToVehicleMembership($vehicle);
 
         return parent::save($data);
     }
@@ -72,22 +72,22 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
         }
         $vehicle = parent::update($model, $data);
 
-        $this->addMembershipType($vehicle);
+        addMembershipTypeToVehicleMembership($vehicle);
 
         return $vehicle;
     }
+}
 
-    protected function addMembershipType($vehicle): void
-    {
-        if ($vehicle instanceof Vehicle && $vehicle->membership_id) {
-            $membershipType = MembershipType::where('min_points', '<=', $vehicle->points)
-                ->orderBy('min_points', 'desc')
-                ->first();
+function addMembershipTypeToVehicleMembership($vehicle): void
+{
+    if ($vehicle instanceof Vehicle && $vehicle->membership_id) {
+        $membershipType = MembershipType::where('min_points', '<=', $vehicle->points)
+            ->orderBy('min_points', 'desc')
+            ->first();
 
-            // Update the membership_type_id
-            $membership = Membership::find($vehicle->membership_id);
-            $membership->membership_type_id = $membershipType ? $membershipType->id : null;
-            $membership->save();
-        }
+        // Update the membership_type_id
+        $membership = Membership::find($vehicle->membership_id);
+        $membership->membership_type_id = $membershipType ? $membershipType->id : null;
+        $membership->save();
     }
 }
