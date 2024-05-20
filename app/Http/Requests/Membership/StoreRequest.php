@@ -16,8 +16,7 @@ class StoreRequest extends Request
     {
         return [
             'name' => 'string',
-            'contact_number' => 'required|string',
-//            'points',
+            'contact_number' => 'required|string|unique:memberships,contact_number',
         ];
     }
 }

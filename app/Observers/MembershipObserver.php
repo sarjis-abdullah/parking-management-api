@@ -12,13 +12,9 @@ class MembershipObserver
      */
     public function created(Membership $membership): void
     {
-        // Retrieve the appropriate membership type based on points
-        $membershipType = MembershipType::where('min_points', '<=', $membership->points + 1)
-            ->orderBy('min_points', 'desc')
-            ->first();
 
-        // Update the membership_type_id
-        $membership->membership_type_id = $membershipType ? $membershipType->id : null;
+        // Retrieve the appropriate membership type based on points
+
     }
 
     /**
@@ -26,7 +22,13 @@ class MembershipObserver
      */
     public function updated(Membership $membership): void
     {
-        dd(67890);
+//        $membershipType = MembershipType::where('min_points', '<=', $membership->points + 1)
+//            ->orderBy('min_points', 'desc')
+//            ->first();
+//
+//        // Update the membership_type_id
+//        $membership->membership_type_id = $membershipType ? $membershipType->id : null;
+//        dd($membership);
 
     }
 

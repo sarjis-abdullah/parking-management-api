@@ -17,7 +17,7 @@ class StoreRequest extends Request
         return [
             'number' => 'required|string|unique:vehicles,number',
             'driver_mobile' => 'string',
-            'membership_id' => 'string|exists:memberships,id',
+            'membership_id' => 'string|exists:memberships,id|unique:vehicles,membership_id',
         ];
     }
 }

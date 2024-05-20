@@ -5,6 +5,8 @@ namespace App\Repositories;
 use App\Enums\ParkingStatus;
 use App\Exceptions\CustomValidationException;
 use App\Models\Membership;
+use App\Models\MembershipType;
+use App\Models\Vehicle;
 use App\Repositories\Contracts\VehicleInterface;
 
 class VehicleRepository extends EloquentBaseRepository implements VehicleInterface
@@ -16,8 +18,8 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
     {
         $queryBuilder = $this->model;
 
-        if(isset($searchCriteria['query'])) {
-            $queryBuilder = $queryBuilder->where('number', 'like', '%'.$searchCriteria['query'] . '%');
+        if (isset($searchCriteria['query'])) {
+            $queryBuilder = $queryBuilder->where('number', 'like', '%' . $searchCriteria['query'] . '%');
             unset($searchCriteria['query']);
         }
 //        $queryBuilder = $queryBuilder->where('status', '!=', ParkingStatus::checked_out->value);
@@ -42,6 +44,18 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
         }
     }
 
+    public function save(array $data): \ArrayAccess
+    {
+        if (isset($data['membership_id'])) {
+            $data['points'] = 5;
+        }
+        $vehicle = parent::save($data);
+
+        $this->addMembershipType($vehicle);
+
+        return parent::save($data);
+    }
+
     /**
      * @throws CustomValidationException
      */
@@ -52,10 +66,28 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
             throw new CustomValidationException('This vehicle is already added to membership list.', 422, [
                 'membership' => ['This vehicle is already added to membership list.'],
             ]);
-        }else if (isset($data['membership_id'])){
+        } else if (isset($data['membership_id'])) {
             $data['points'] = 5;
 
         }
-        return parent::update($model, $data);
+        $vehicle = parent::update($model, $data);
+
+        $this->addMembershipType($vehicle);
+
+        return $vehicle;
+    }
+
+    protected function addMembershipType($vehicle): void
+    {
+        if ($vehicle instanceof Vehicle && $vehicle->membership_id) {
+            $membershipType = MembershipType::where('min_points', '<=', $vehicle->points)
+                ->orderBy('min_points', 'desc')
+                ->first();
+
+            // Update the membership_type_id
+            $membership = Membership::find($vehicle->membership_id);
+            $membership->membership_type_id = $membershipType ? $membershipType->id : null;
+            $membership->save();
+        }
     }
 }

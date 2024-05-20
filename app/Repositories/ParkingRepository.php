@@ -7,6 +7,7 @@ use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
 use App\Models\Membership;
+use App\Models\MembershipType;
 use App\Models\Payment;
 use App\Models\Slot;
 use App\Models\Tariff;
@@ -74,10 +75,23 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         ];
         $vehicleId = null;
         if ($oldVehicle instanceof Vehicle){
+
             if ($oldVehicle->membership_id){
                 $vehicleData['points'] = $oldVehicle->points + 5;
             }
             $oldVehicle->update($vehicleData);
+
+            if ($oldVehicle->membership_id){
+                $membershipType = MembershipType::where('min_points', '<=', $oldVehicle->points)
+                    ->orderBy('min_points', 'desc')
+                    ->first();
+
+                // Update the membership_type_id
+                $membership = Membership::find($oldVehicle->membership_id);
+                $membership->membership_type_id = $membershipType ? $membershipType->id : null;
+                $membership->save();
+            }
+
             $vehicleId = $oldVehicle->id;
         }else {
             $vehicle = Vehicle::create($vehicleData);
