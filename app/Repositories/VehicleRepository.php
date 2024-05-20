@@ -22,7 +22,6 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
             $queryBuilder = $queryBuilder->where('number', 'like', '%' . $searchCriteria['query'] . '%');
             unset($searchCriteria['query']);
         }
-//        $queryBuilder = $queryBuilder->where('status', '!=', ParkingStatus::checked_out->value);
 
         $queryBuilder = $queryBuilder->where(function ($query) use ($searchCriteria) {
             $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);
@@ -42,39 +41,6 @@ class VehicleRepository extends EloquentBaseRepository implements VehicleInterfa
         } else {
             return $queryBuilder->get();
         }
-    }
-
-    public function save(array $data): \ArrayAccess
-    {
-        if (isset($data['membership_id'])) {
-            $data['points'] = 5;
-        }
-        $vehicle = parent::save($data);
-
-        addMembershipTypeToVehicleMembership($vehicle);
-
-        return parent::save($data);
-    }
-
-    /**
-     * @throws CustomValidationException
-     */
-    public function update(\ArrayAccess $model, array $data): \ArrayAccess
-    {
-        if ($model->membership_id && isset($data['membership_id'])) {
-            unset($data['membership_id']);
-            throw new CustomValidationException('This vehicle is already added to membership list.', 422, [
-                'membership' => ['This vehicle is already added to membership list.'],
-            ]);
-        } else if (isset($data['membership_id'])) {
-            $data['points'] = 5;
-
-        }
-        $vehicle = parent::update($model, $data);
-
-        addMembershipTypeToVehicleMembership($vehicle);
-
-        return $vehicle;
     }
 }
 

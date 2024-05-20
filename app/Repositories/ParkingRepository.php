@@ -65,6 +65,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         $oldVehicle = Vehicle::where('number', $data['vehicle_no'])->first();
         $this->checkVehicleCheckedInToThrowError($oldVehicle);
+
         $vehicleData = [
             'number' => $data['vehicle_no'],
             'driver_name' => $data['driver_name'] ?? null,
@@ -75,12 +76,13 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $vehicleId = null;
         if ($oldVehicle instanceof Vehicle){
 
-            if ($oldVehicle->membership_id){
-                $vehicleData['points'] = $oldVehicle->points + 5;
+            if ($oldVehicle->membership){
+                $membership = $oldVehicle->membership;
+                $membership_id = $oldVehicle->membership->id;
+                Membership::find($membership_id)->update(['points' => $membership->points + 5]);
+                addMembershipTypeToVehicleMembership($membership);
             }
             $oldVehicle->update($vehicleData);
-
-            addMembershipTypeToVehicleMembership($oldVehicle);
 
             $vehicleId = $oldVehicle->id;
         }else {
@@ -194,16 +196,16 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     }
 }
 
-function addMembershipTypeToVehicleMembership($vehicle): void
+function addMembershipTypeToVehicleMembership(Membership $membership): void
 {
-    if ($vehicle instanceof Vehicle && $vehicle->membership_id) {
-        $membershipType = MembershipType::where('min_points', '<=', $vehicle->points)
+    if ($membership?->id) {
+        $membership_id = $membership->id;
+        $membershipType = MembershipType::where('min_points', '<=', $membership->points)
             ->orderBy('min_points', 'desc')
             ->first();
 
-        // Update the membership_type_id
-        $membership = Membership::find($vehicle->membership_id);
-        $membership->membership_type_id = $membershipType ? $membershipType->id : null;
-        $membership->save();
+        Membership::find($membership_id)->update([
+            'membership_type_id' => $membershipType->id ?? null
+        ]);
     }
 }

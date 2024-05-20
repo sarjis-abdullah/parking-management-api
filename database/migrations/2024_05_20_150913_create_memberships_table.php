@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 191)->nullable();
             $table->string('contact_number', 191);
             $table->foreignId( 'membership_type_id')->nullable()->constrained('membership_types');
+            $table->foreignId( 'vehicle_id')->nullable()->constrained('vehicles');
             $table->integer('points')->default(0);
             $table->timestamps();
         });

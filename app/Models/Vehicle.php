@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Vehicle extends Model
 {
@@ -14,8 +15,12 @@ class Vehicle extends Model
         'driver_name',
         'driver_mobile',
         'status',
-        'membership_id',
         'category_id',
         'points',
     ];
+
+    public function membership(): HasOne
+    {
+        return $this->hasOne(Membership::class);
+    }
 }
