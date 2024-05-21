@@ -16,6 +16,9 @@ class Membership extends Model
         'membership_type_id',
         'points',
         'vehicle_id',
+        'offer_type',
+        'discount_percentage',
+        'discount_amount',
     ];
 
     public function membershipType(): BelongsTo
