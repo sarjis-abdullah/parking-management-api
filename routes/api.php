@@ -2,12 +2,13 @@
 
 use App\Enums\RolesAndPermissions;
 use App\Http\Controllers\UserController;
+use App\Models\Parking;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Laravel\Passport\Console\ClientCommand;
-use Laravel\Passport\Console\InstallCommand;
-use Laravel\Passport\Console\KeysCommand;
+use Carbon\Carbon;
 
 Route::get('/', function (Request $request) {
     return response()->json(['message' => 'Hello World!'], 200);
@@ -56,6 +57,32 @@ Route::get('/db:seed', function () {
     // Output a message indicating the installation
     echo "Database seeded: <br>";
     echo $output;
+});Route::get('/report-view', function () {
+//    return view('parking-report');
+    return view('format-1');
+});
+
+Route::get('/re', function () {
+    $startDate = Carbon::parse('2024-01-01');
+    $endDate = Carbon::parse('2024-07-31');
+
+    $dateWiseVehicleEntries = Parking::select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'))
+        ->whereNotNull('in_time')
+        ->whereBetween('in_time', [$startDate, $endDate])
+        ->groupBy('entry_date')
+        ->orderBy('entry_date')
+        ->get();
+
+    $dateWiseTransactions = Payment::select(DB::raw('DATE(created_at) as transaction_date'), DB::raw('COUNT(id) as transaction_count'), DB::raw('SUM(payable_amount) as total_payable'), DB::raw('SUM(paid_amount) as total_paid'), DB::raw('SUM(due_amount) as total_due'))
+        ->whereBetween('created_at', [$startDate, $endDate])
+        ->groupBy('transaction_date')
+        ->orderBy('transaction_date')
+        ->get();
+
+    return response()->json([
+        'dateWiseVehicleEntries'=> $dateWiseVehicleEntries,
+        'dateWiseTransactions'=> $dateWiseTransactions,
+    ]);
 });
 
 Route::get('/install-passport', function () {
@@ -112,7 +139,10 @@ Route::group(['prefix' => 'api/v1'], function () {
             ['role:'.RolesAndPermissions::ADMIN.'|'.RolesAndPermissions::SUPER_ADMIN]
         )->group(function () {
 
-
+            Route::group(['prefix' => 'report'], function () {
+                Route::get('/transaction', [\App\Http\Controllers\ReportController::class, 'getTransactionReport'])->name('transaction.report');
+                Route::get('/vehicle', [\App\Http\Controllers\ReportController::class, 'getVehicleReport'])->name('vehicle.report');
+            });
             Route::apiResource('user', UserController::class);
             Route::apiResource('place', \App\Http\Controllers\PlaceController::class)->except('index');
             Route::apiResource('floor', \App\Http\Controllers\FloorController::class)->except('index');

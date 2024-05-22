@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\ParkingStatus;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,11 +18,11 @@ class VehicleResource extends Resource
         return [
             'id' => $this->id,
             'number' => $this->number,
-            'driver_name' => $this->number,
-            'driver_mobile' => $this->number,
-            'status' => $this->number,
-            'category_id' => $this->number,
-            'points' => $this->number,
+            'driver_name' => $this->driver_name,
+            'driver_mobile' => $this->driver_mobile,
+            'status' => $this->status == ParkingStatus::checked_in ? 'Checked-in' : 'Checked-out',
+            'category_id' => $this->category_id,
+//            'points' => $this->number,
             'membership'  => $this->needToInclude($request, 'v.membership') ? new MembershipResource($this->membership) : null,
         ];
     }
