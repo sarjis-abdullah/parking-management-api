@@ -16,9 +16,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->mediumText('description')->nullable();
-            $table->tinyInteger('limit_count')->default(1);
             $table->enum('status', $states)->default('active');
-            $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
             $table->timestamps();

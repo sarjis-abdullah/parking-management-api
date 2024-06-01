@@ -19,10 +19,10 @@ class PlaceResource extends Resource
             'name' => $this->name ,
             'description'=> $this->description,
             'status'=> $this->status,
-            'created_by'=> $this->created_by,
-            'createdByUser'  => $this->needToInclude($request, 'p.createdByUser') ? new UserResource($this->createdByUser) : null,
-            'updated_by'=> $this->id,
-            'deleted_by'=> $this->id,
+//            'created_by'=> $this->created_by,
+//            'createdByUser'  => $this->needToInclude($request, 'p.createdByUser') ? new UserResource($this->createdByUser) : null,
+//            'updated_by'=> $this->id,
+//            'deleted_by'=> $this->id,
         ];
     }
 }

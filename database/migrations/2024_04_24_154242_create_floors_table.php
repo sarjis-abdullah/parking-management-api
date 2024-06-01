@@ -19,7 +19,7 @@ return new class extends Migration
             $table->tinyInteger('level')->default(0);
             $table->string('remarks', 191)->nullable();
             $table->enum('status', $states)->default('active');
-            $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
             $table->timestamps();

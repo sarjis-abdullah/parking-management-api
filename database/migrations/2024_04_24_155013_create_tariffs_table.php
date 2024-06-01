@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('status', $states)->default('enabled');
             $table->boolean('default')->default(false);
             $table->string('type')->default('half-hourly');
-            $table->foreignId( 'created_by')->constrained('users')->onDelete('cascade');
+            $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
             $table->timestamps();

@@ -20,7 +20,7 @@ class VehicleResource extends Resource
             'number' => $this->number,
             'driver_name' => $this->driver_name,
             'driver_mobile' => $this->driver_mobile,
-            'status' => $this->status == ParkingStatus::checked_in ? 'Checked-in' : 'Checked-out',
+            'status' => $this->status,
             'category_id' => $this->category_id,
 //            'points' => $this->number,
             'membership'  => $this->needToInclude($request, 'v.membership') ? new MembershipResource($this->membership) : null,

@@ -13,15 +13,9 @@ class Category extends Model
     protected $fillable = [
         'name',
         'description',
-        'limit_count',
         'status',
         'created_by',
         'updated_by',
         'deleted_by',
     ];
-
-    public function place() : BelongsTo
-    {
-        return $this->belongsTo(Place::class);
-    }
 }

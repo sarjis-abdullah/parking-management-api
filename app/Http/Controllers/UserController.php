@@ -46,9 +46,11 @@ class UserController
         }else {
             $pass = Hash::make($request->password);
         }
-        $list = $this->userInterface->save([...$request->all(), 'password' => $pass]);
-        return $list;
-        return new UserResource($list);
+        $user = $this->userInterface->save([...$request->all(), 'password' => $pass]);
+
+        $user->assignRole([$request->role]);
+
+        return new UserResource($user);
     }
 
     /**
