@@ -15,20 +15,19 @@ return new class extends Migration
     {
         Schema::create('parkings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
-            $table->foreignId('slot_id')->constrained('slots')->onDelete('cascade');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
-            $table->foreignId('tariff_id')->constrained('tariffs')->onDelete('cascade');
+            $table->foreignIdFor(\App\Models\Place::class, 'place_id')->nullable();
+            $table->foreignIdFor(\App\Models\Slot::class, 'slot_id')->nullable();
+            $table->foreignIdFor(\App\Models\Category::class, 'category_id')->nullable();
+            $table->foreignIdFor(\App\Models\Floor::class, 'floor_id')->nullable();
+            $table->foreignIdFor(\App\Models\Tariff::class, 'tariff_id')->nullable();
             $table->string('barcode', 191)->unique();
             $table->dateTime('in_time')->nullable();
             $table->dateTime('out_time')->nullable();
             $table->integer('duration')->nullable();
             $table->string('status')->nullable()->default('');
-            $table->foreignId( 'vehicle_id')->nullable()->constrained('vehicles');
+            $table->foreignIdFor(\App\Models\Vehicle::class, 'vehicle_id')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
-            $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
             $table->timestamps();
         });
     }

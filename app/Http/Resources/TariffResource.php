@@ -19,10 +19,9 @@ class TariffResource extends Resource
             'name' => $this->name,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
-//            'place_id' => $this->place_id,
-//            'category_id' => $this->id,
             'status' => $this->status,
             'default' => $this->default,
+            'total_active_parking_count' => $this->total_active_parking_count(),
             'parking_rates'  => $this->needToInclude($request, 't.parking_rates') ? new ParkingRateResourceCollection($this->parking_rates) : null,
         ];
     }

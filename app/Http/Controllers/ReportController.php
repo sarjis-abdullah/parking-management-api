@@ -14,15 +14,19 @@ class ReportController
 {
     function getTransactionReport(TransactionIndexRequest $request)
     {
-        $startDate = Carbon::parse('2024-01-01');
-        $endDate = Carbon::parse('2024-07-31');
-
-        $paymentQuery = Payment::query();
-        if (isset($request->paid_by_vehicle_id)){
-            $paymentQuery = $paymentQuery->where('paid_by_vehicle_id', $request->paid_by_vehicle_id);
+        $queryBuilder = Payment::query();
+        if (isset($request->vehicle_id)){
+            $queryBuilder = $queryBuilder->where('paid_by_vehicle_id', $request->vehicle_id);
         }
-        $dateWiseTransactions = $paymentQuery->select(DB::raw('DATE(created_at) as transaction_date'), DB::raw('COUNT(id) as transaction_count'), DB::raw('SUM(payable_amount) as total_payable'), DB::raw('SUM(paid_amount) as total_paid'), DB::raw('SUM(due_amount) as total_due'))
-            ->whereBetween('created_at', [$startDate, $endDate])
+
+        if (isset($request['end_date'])) {
+            $queryBuilder  =  $queryBuilder->whereDate('created_at', '<=', Carbon::parse($request['end_date']));
+        }
+
+        if (isset($request['start_date'])) {
+            $queryBuilder =  $queryBuilder->whereDate('created_at', '>=', Carbon::parse($request['start_date']));
+        }
+        $dateWiseTransactions = $queryBuilder->select(DB::raw('DATE(created_at) as transaction_date'), DB::raw('COUNT(id) as transaction_count'), DB::raw('SUM(payable_amount) as total_payable'), DB::raw('SUM(paid_amount) as total_paid'), DB::raw('SUM(due_amount) as total_due'))
 
             ->groupBy('transaction_date')
             ->orderBy('transaction_date');
@@ -34,12 +38,21 @@ class ReportController
 
     function getVehicleReport(VehicleIndexRequest $request)
     {
-        $startDate = Carbon::parse('2024-01-01');
-        $endDate = Carbon::parse('2024-07-31');
+        $queryBuilder = Parking::query();
 
-        $dateWiseVehicleEntries = Parking::select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'))
+        if (isset($request->vehicle_id)){
+            $queryBuilder = $queryBuilder->where('vehicle_id', $request->vehicle_id);
+        }
+        if (isset($request['end_date'])) {
+            $queryBuilder  =  $queryBuilder->whereDate('in_time', '<=', Carbon::parse($request['end_date']));
+        }
+
+        if (isset($request['start_date'])) {
+            $queryBuilder =  $queryBuilder->whereDate('in_time', '>=', Carbon::parse($request['start_date']));
+        }
+
+        $dateWiseVehicleEntries = $queryBuilder->select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'))
             ->whereNotNull('in_time')
-            ->whereBetween('in_time', [$startDate, $endDate])
             ->groupBy('entry_date')
             ->orderBy('entry_date')
             ->get();

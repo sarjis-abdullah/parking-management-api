@@ -17,7 +17,7 @@ class IndexRequest extends Request
         return [
             'start_date' => 'date|date_format:Y-m-d',
             'end_date' => 'date|date_format:Y-m-d',
-            'paid_by_vehicle_id' => 'sometimes|required|exists:vehicles,id',
+            'vehicle_id' => 'sometimes|required|exists:vehicles,id',
         ];
     }
 }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('status', $states)->default('active');
             $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
-            $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
+
             $table->timestamps();
         });
     }

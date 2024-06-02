@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('status', $status)->default(SlotStatus::available->value);
             $table->foreignIdFor(\App\Models\User::class, 'created_by')->nullable();
             $table->foreignIdFor(\App\Models\User::class, 'updated_by')->nullable();
-            $table->foreignIdFor(\App\Models\User::class, 'deleted_by')->nullable();
+
             $table->timestamps();
         });
     }

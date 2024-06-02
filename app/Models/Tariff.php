@@ -27,4 +27,18 @@ class Tariff extends Model
     {
         return $this->hasMany(ParkingRate::class);
     }
+
+    public function parking(): HasMany
+    {
+        return $this->hasMany(Parking::class);
+    }
+
+    public function total_active_parking_count(): int
+    {
+        $query = $this->parking();
+
+        $query->where('out_time', '=', null);
+
+        return $query->count();
+    }
 }
