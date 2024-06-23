@@ -16,6 +16,7 @@ use App\Repositories\Contracts\InstrumentSupportedRepository;
 use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\PlaceInterface;
 use App\Repositories\Contracts\UserInterface;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -92,9 +93,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         $data['vehicle_id'] = $vehicleId;
 
-        if (!isset($data['tariff_id'])){
-            $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
-        }
+        $data['tariff_id'] = $this->getValidatedTariff($data);
+
+
         if ($slot->status != SlotStatus::occupied->value){
             Slot::find($data['slot_id'])->update([
                 'status' => SlotStatus::occupied->value
@@ -111,6 +112,18 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
     /**
      * @throws CustomValidationException
+     */
+    protected function isTariffExpired(Tariff $tariff): void
+    {
+        $endDateCarbon = Carbon::parse($tariff->end_date);
+        if ($endDateCarbon->isPast()){
+            throw new CustomValidationException('The name field must be an array.', 422, [
+                'tariff_id' => ['Tariff is expired, add new tariff first.'],
+            ]);
+        }
+    }
+
+    /**
      */
     public function update(\ArrayAccess $model, array $data): \ArrayAccess
     {
@@ -193,6 +206,34 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         DB::commit();
 
         return $item;
+    }
+
+    /**
+     * @throws CustomValidationException
+     */
+    private function getValidatedTariff(array $data): int
+    {
+        if (!isset($data['tariff_id'])){
+            $tariff = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first();
+
+            if ($tariff instanceof Tariff){
+                $this->isTariffExpired($tariff);
+                return $tariff->id;
+            }else {
+                throw new CustomValidationException('The name field must be an array.', 422, [
+                    'tariff_id' => ['No tariff available, add a tariff first.'],
+                ]);
+            }
+        }else {
+            $tariff = Tariff::find($data['tariff_id']);
+            $endDateCarbon = Carbon::parse($tariff->end_date);
+            if ($endDateCarbon->isPast()){
+                throw new CustomValidationException('The name field must be an array.', 422, [
+                    'tariff_id' => ['Tariff is expired, add new tariff first.'],
+                ]);
+            }
+        }
+        return $data['tariff_id'];
     }
 }
 

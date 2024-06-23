@@ -31,4 +31,16 @@ class Floor extends Model
     {
         return $this->hasMany(Slot::class);
     }
+
+    public function parking(): HasMany
+    {
+        return $this->hasMany(Parking::class);
+    }
+
+    public function has_parking(): bool
+    {
+        $query = $this->parking();
+
+        return $query->count() > 0;
+    }
 }

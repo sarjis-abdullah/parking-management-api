@@ -17,7 +17,7 @@ class Parking extends Model
         'category_id',
         'slot_id',
         'floor_id',
-        'tariff_id',
+        'tariff_id', //
         'vehicle_id',
         'barcode',
         'in_time',
