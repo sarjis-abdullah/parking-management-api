@@ -115,11 +115,21 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
      */
     protected function isTariffExpired(Tariff $tariff): void
     {
-        $endDateCarbon = Carbon::parse($tariff->end_date);
-        if ($endDateCarbon->isPast()){
-            throw new CustomValidationException('The name field must be an array.', 422, [
-                'tariff_id' => ['Tariff is expired, add new tariff first.'],
-            ]);
+        if ($tariff?->end_date){
+            $endDateCarbon = Carbon::parse($tariff->end_date);
+            if ($endDateCarbon->isPast()){
+                throw new CustomValidationException('The name field must be an array.', 422, [
+                    'tariff_id' => ['Tariff is expired, add new tariff first.'],
+                ]);
+            }
+        }
+        if ($tariff?->start_date){
+            $currentDate = Carbon::now();
+            if ($currentDate->lessThan($tariff->start_date)) {
+                throw new CustomValidationException('The name field must be an array.', 422, [
+                    'tariff_id' => ['The tariff is not active yet.'],
+                ]);
+            }
         }
     }
 
