@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Membership;
+namespace App\Http\Requests\MembershipType;
 
 use App\Http\Requests\Request;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateRequest extends Request
 {
@@ -16,9 +17,10 @@ class UpdateRequest extends Request
     public function rules(): array
     {
         return [
-            'name' => 'nullable|string',
-//            'vehicle_id' => 'integer|exists:vehicles,id',
-            'membership_type_id' => 'integer|exists:membership_types,id',
+            'name' => 'required|string|unique:membership_types,id',
+            'discount_type' => ['required', Rule::in(['percentage', 'free', 'flat'])],
+            'discount_amount' => ['required', 'numeric', 'min:0'],
+            'default' => ['required', 'boolean'],
         ];
     }
 }

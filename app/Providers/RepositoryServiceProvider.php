@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Floor;
 use App\Models\InstrumentSupported;
 use App\Models\Membership;
+use App\Models\MembershipType;
 use App\Models\Parking;
 use App\Models\ParkingRate;
 use App\Models\Place;
@@ -19,6 +20,7 @@ use App\Repositories\Contracts\CategoryInterface;
 use App\Repositories\Contracts\FloorInterface;
 use App\Repositories\Contracts\InstrumentSupportedRepository;
 use App\Repositories\Contracts\MembershipInterface;
+use App\Repositories\Contracts\MembershipTypeInterface;
 use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\ParkingRateInterface;
 use App\Repositories\Contracts\PlaceInterface;
@@ -29,6 +31,7 @@ use App\Repositories\Contracts\VehicleInterface;
 use App\Repositories\EloquentInstrumentSupportedRepository;
 use App\Repositories\FloorRepository;
 use App\Repositories\MembershipRepository;
+use App\Repositories\MembershipTypeRepository;
 use App\Repositories\ParkingRateRepository;
 use App\Repositories\ParkingRepository;
 use App\Repositories\PlaceRepository;
@@ -67,5 +70,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PlaceInterface::class, fn() => new PlaceRepository(new Place()));
         $this->app->bind(VehicleInterface::class, fn() => new VehicleRepository(new Vehicle()));
         $this->app->bind(MembershipInterface::class, fn() => new MembershipRepository(new Membership()));
+        $this->app->bind(MembershipTypeInterface::class, fn() => new MembershipTypeRepository(new MembershipType()));
     }
 }

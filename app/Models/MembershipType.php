@@ -12,6 +12,9 @@ class MembershipType extends Model
     protected $fillable = [
         'name',
         'min_points',
+        'discount_type',
+        'discount_amount',
+        'default',
     ];
 
     public function memberships(): \Illuminate\Database\Eloquent\Relations\HasMany

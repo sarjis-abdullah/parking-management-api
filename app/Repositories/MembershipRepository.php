@@ -13,7 +13,7 @@ class MembershipRepository extends EloquentBaseRepository implements MembershipI
      */
     public function save(array $data): \ArrayAccess
     {
-        $type = MembershipType::where('default', true)->first();
+        $type = MembershipType::where('default', true)->orderBy('id', 'desc')->first();
         if ($type == null){
             throw new CustomValidationException('The name field must be an array.', 422, [
                 'membership_type' => ['No default membership found, add a default membership type.'],

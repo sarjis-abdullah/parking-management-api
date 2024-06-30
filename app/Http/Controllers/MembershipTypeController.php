@@ -2,33 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MembershipType\IndexRequest;
+use App\Http\Requests\MembershipType\StoreRequest;
+use App\Http\Requests\MembershipType\UpdateRequest;
+use App\Http\Resources\MembershipTypeResource;
+use App\Http\Resources\MembershipTypeResourceCollection;
 use App\Models\MembershipType;
+use App\Repositories\Contracts\MembershipTypeInterface;
 use Illuminate\Http\Request;
 
 class MembershipTypeController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private MembershipTypeInterface $membershipType;
+
+    public function __construct(MembershipTypeInterface $membershipType)
     {
-        //
+        $this->membershipType = $membershipType;
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(IndexRequest $request)
     {
-        //
+        $list = $this->membershipType->findBy($request->all());
+        return new MembershipTypeResourceCollection($list);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        //
+        $list = $this->membershipType->save($request->all());
+        return new MembershipTypeResource($list);
     }
 
     /**
@@ -36,23 +43,16 @@ class MembershipTypeController
      */
     public function show(MembershipType $membershipType)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MembershipType $membershipType)
-    {
-        //
+        return new MembershipTypeResource($membershipType);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, MembershipType $membershipType)
+    public function update(UpdateRequest $request, MembershipType $membershipType)
     {
-        //
+        $list = $this->membershipType->update($membershipType, $request->all());
+        return new MembershipTypeResource($list);
     }
 
     /**
@@ -60,6 +60,7 @@ class MembershipTypeController
      */
     public function destroy(MembershipType $membershipType)
     {
-        //
+        $this->membershipType->delete($membershipType);
+        return response()->json(null, 204);
     }
 }

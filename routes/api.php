@@ -151,7 +151,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::apiResource('category', \App\Http\Controllers\CategoryController::class)->except('index');
             Route::apiResource('slot', \App\Http\Controllers\SlotController::class)->except('index');
             Route::apiResource('tariff', \App\Http\Controllers\TariffController::class)->except('index');
+            Route::apiResource('membership-type', \App\Http\Controllers\MembershipTypeController::class);
         });
-
     });
 });
