@@ -18,7 +18,7 @@ class UpdateRequest extends Request
         $states  = array_column(\App\Enums\PlaceStatus::cases(), 'value');
         return [
             'name' => 'string',
-            'description'  => 'string',
+            'description'  => 'nullable|string',
             'status'  => [Rule::in($states)],
         ];
     }

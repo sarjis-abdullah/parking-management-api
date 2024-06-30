@@ -19,10 +19,12 @@ Route::get('/migrate', function (Request $request) {
     return 'Migration completed successfully.';
 });
 Route::get('/install', function (Request $request) {
+    $user = \App\Models\User::where('id', '!=', null)->first();
+
     Artisan::call('migrate:fresh', array('--force' => true));
 
-    $user = \App\Models\User::find(1);
-    if (!$user instanceof \App\Models\User)
+
+    if ($user == null)
         Artisan::call('db:seed');
 
     define('STDIN',fopen("php://stdin","r"));
@@ -63,26 +65,26 @@ Route::get('/db:seed', function () {
 });
 
 Route::get('/re', function () {
-    $startDate = Carbon::parse('2024-01-01');
-    $endDate = Carbon::parse('2024-07-31');
-
-    $dateWiseVehicleEntries = Parking::select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'))
-        ->whereNotNull('in_time')
-        ->whereBetween('in_time', [$startDate, $endDate])
-        ->groupBy('entry_date')
-        ->orderBy('entry_date')
-        ->get();
-
-    $dateWiseTransactions = Payment::select(DB::raw('DATE(created_at) as transaction_date'), DB::raw('COUNT(id) as transaction_count'), DB::raw('SUM(payable_amount) as total_payable'), DB::raw('SUM(paid_amount) as total_paid'), DB::raw('SUM(due_amount) as total_due'))
-        ->whereBetween('created_at', [$startDate, $endDate])
-        ->groupBy('transaction_date')
-        ->orderBy('transaction_date')
-        ->get();
-
-    return response()->json([
-        'dateWiseVehicleEntries'=> $dateWiseVehicleEntries,
-        'dateWiseTransactions'=> $dateWiseTransactions,
-    ]);
+//    $startDate = Carbon::parse('2024-01-01');
+//    $endDate = Carbon::parse('2024-07-31');
+//
+//    $dateWiseVehicleEntries = Parking::select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'))
+//        ->whereNotNull('in_time')
+//        ->whereBetween('in_time', [$startDate, $endDate])
+//        ->groupBy('entry_date')
+//        ->orderBy('entry_date')
+//        ->get();
+//
+//    $dateWiseTransactions = Payment::select(DB::raw('DATE(created_at) as transaction_date'), DB::raw('COUNT(id) as transaction_count'), DB::raw('SUM(payable_amount) as total_payable'), DB::raw('SUM(paid_amount) as total_paid'), DB::raw('SUM(due_amount) as total_due'))
+//        ->whereBetween('created_at', [$startDate, $endDate])
+//        ->groupBy('transaction_date')
+//        ->orderBy('transaction_date')
+//        ->get();
+//
+//    return response()->json([
+//        'dateWiseVehicleEntries'=> $dateWiseVehicleEntries,
+//        'dateWiseTransactions'=> $dateWiseTransactions,
+//    ]);
 });
 
 Route::get('/install-passport', function () {

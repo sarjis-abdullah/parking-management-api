@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('min_points')->default(0);
+            $table->enum('discount_type', ['percentage', 'free', 'flat'])->default('percentage');
+            $table->decimal('discount_amount')->default(0);
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

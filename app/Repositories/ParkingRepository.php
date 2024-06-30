@@ -77,12 +77,12 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $vehicleId = null;
         if ($oldVehicle instanceof Vehicle){
 
-            if ($oldVehicle->membership){
-                $membership = $oldVehicle->membership;
-                $membership_id = $oldVehicle->membership->id;
-                Membership::find($membership_id)->update(['points' => $membership->points + 5]);
-                addMembershipTypeToVehicleMembership($membership);
-            }
+//            if ($oldVehicle?->membership){
+//                $membership = $oldVehicle->membership;
+//                $membership_id = $oldVehicle->membership->id;
+//                Membership::find($membership_id)->update(['points' => $membership->points + 5]);
+//                addMembershipTypeToVehicleMembership($membership);
+//            }
             $oldVehicle->update($vehicleData);
 
             $vehicleId = $oldVehicle->id;

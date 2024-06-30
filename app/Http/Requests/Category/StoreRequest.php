@@ -17,7 +17,6 @@ class StoreRequest extends Request
         return [
             'name' => 'required|string|unique:categories',
             'description' => 'nullable',
-            'limit_count' => 'integer',
 //            'status' => 'required|in:active,inactive',
         ];
     }
