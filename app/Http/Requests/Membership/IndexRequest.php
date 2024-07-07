@@ -15,7 +15,7 @@ class IndexRequest extends Request
     public function rules(): array
     {
         return [
-            //
+            'query' => 'string'
         ];
     }
 }

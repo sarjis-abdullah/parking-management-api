@@ -211,8 +211,9 @@ class EloquentBaseRepository implements BaseRepository
         $queryBuilder,
         array $searchCriteria = [],
         string $operator = '='
-    ) {
-        unset($searchCriteria['include'], $searchCriteria['only'], $searchCriteria['eagerLoad'], $searchCriteria['rawOrder'], $searchCriteria['detailed'], $searchCriteria['userInfo'],  $searchCriteria['withOutPagination']); //don't need that field for query. only needed for transformer.
+    ): object
+    {
+        unset($searchCriteria['include'], $searchCriteria['eagerLoad'], $searchCriteria['rawOrder'], $searchCriteria['detailed'], $searchCriteria['withoutPagination']); //don't need that field for query. only needed for transformer.
 
         foreach ($searchCriteria as $key => $value) {
 
@@ -228,7 +229,11 @@ class EloquentBaseRepository implements BaseRepository
                     $queryBuilder->whereNotNull($key);
                 } else {
                     //we can pass multiple params for a filter with commas
-                    $allValues = explode(',', $value);
+                    if (is_array($value)) {
+                        $allValues = $value;
+                    } else {
+                        $allValues = explode(',', $value);
+                    }
 
                     if (count($allValues) > 1) {
                         $queryBuilder->whereIn($key, $allValues);
