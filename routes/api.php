@@ -22,10 +22,13 @@ Route::get('/install', function (Request $request) {
     $user = \App\Models\User::where('id', '!=', null)->first();
 
     Artisan::call('migrate:fresh', array('--force' => true));
+    Artisan::call('db:seed');
 
-
-    if ($user == null)
-        Artisan::call('db:seed');
+//    if ($user == null)
+//    {
+//        Artisan::call('db:seed');
+//        dump('Database seed completed successfully.');
+//    }
 
     define('STDIN',fopen("php://stdin","r"));
     Artisan::call('passport:install', [
@@ -135,6 +138,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::get('category', [\App\Http\Controllers\CategoryController::class, 'index']);
             Route::get('slot', [\App\Http\Controllers\SlotController::class, 'index']);
             Route::get('tariff', [\App\Http\Controllers\TariffController::class, 'index']);
+            Route::put('payment/{payment}', [\App\Http\Controllers\PaymentController::class, 'update']);
         });
 
         Route::middleware(

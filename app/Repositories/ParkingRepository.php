@@ -30,7 +30,11 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $queryBuilder = $this->model;
 
         if(isset($searchCriteria['query'])) {
-            $queryBuilder = $queryBuilder->where('vehicle_no', 'like', '%'.$searchCriteria['query'] . '%');
+            $searchCriteria['id'] = $this->model->where('barcode', 'like', '%' . $searchCriteria['query'] . '%')
+                ->orWhereHas('vehicle', function ($query) use ($searchCriteria) {
+                    $query->where('number', 'like', '%' . $searchCriteria['query'] . '%');
+                })
+                ->pluck('id')->toArray();
             unset($searchCriteria['query']);
         }
         $queryBuilder = $queryBuilder->where('status', '!=', ParkingStatus::checked_out->value);
@@ -203,6 +207,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         Payment::create([
             'method' => $data['payment']['method'],
             'paid_amount' => $data['payment']['paid_amount'],
+            'payable_amount' => $data['payment']['payable_amount'],
+            'discount_amount' => $data['payment']['discount_amount'],
             'received_by' => auth()->id(),
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,

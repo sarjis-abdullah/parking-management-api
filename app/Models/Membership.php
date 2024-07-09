@@ -30,4 +30,9 @@ class Membership extends Model
     {
         return $this->belongsTo(Vehicle::class);
     }
+
+    public function parkings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Parking::class, 'vehicle_id', 'vehicle_id');
+    }
 }

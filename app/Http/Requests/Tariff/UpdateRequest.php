@@ -21,7 +21,7 @@ class UpdateRequest extends Request
             'name' => Rule::unique('tariffs')->ignore($tariff->name, 'name'),
 
 //            'name' => 'required|string|unique:tariffs,name',
-//            'default' => 'boolean',
+            'default' => 'boolean',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after:start_date',
         ];

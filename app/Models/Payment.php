@@ -12,6 +12,7 @@ class Payment extends Model
     protected $fillable = [
         'method',
         'payable_amount',
+        'discount_amount',
         'paid_amount',
         'due_amount',
         'status',

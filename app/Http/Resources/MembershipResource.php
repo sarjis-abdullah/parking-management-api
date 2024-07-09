@@ -20,6 +20,7 @@ class MembershipResource extends Resource
             'contact_number' => $this->contact_number,
             'vehicle_id' => $this->vehicle_id,
             'membership_type_id' => $this->membership_type_id,
+            'totalParkingCount' => $this->parkings->count(),
             'membership_type'  => $this->needToInclude($request, 'm.mt') ? new MembershipTypeResource($this->membershipType) : null,
             'vehicle'  => $this->needToInclude($request, 'm.vehicle') ? new VehicleResource($this->vehicle) : null,
         ];

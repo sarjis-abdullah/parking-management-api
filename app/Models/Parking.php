@@ -60,4 +60,8 @@ class Parking extends Model
     {
         return $this->belongsTo(Vehicle::class);
     }
+    public function membership(): BelongsTo
+    {
+        return $this->belongsTo(Membership::class, 'vehicle_id', 'vehicle_id');
+    }
 }

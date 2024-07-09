@@ -20,6 +20,8 @@ class CheckoutRequest extends Request
             'payment' => 'required',
             'payment.method' => 'required|string',
             'payment.paid_amount' => 'required|numeric',
+            'payment.payable_amount' => 'required|numeric',
+            'payment.discount_amount' => 'required|numeric',
         ];
     }
 }

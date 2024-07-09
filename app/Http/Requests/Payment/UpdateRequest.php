@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Parking;
+namespace App\Http\Requests\Payment;
 
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class IndexRequest extends Request
+class UpdateRequest extends Request
 {
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -15,9 +16,8 @@ class IndexRequest extends Request
     public function rules(): array
     {
         return [
-            'barcode' => 'string|nullable',
-//            'vehicle_no' => 'string',
-            'query' => 'string',
+            'paid_amount' => 'required',
+            'method' => 'required',
         ];
     }
 }
