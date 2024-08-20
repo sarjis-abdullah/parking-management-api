@@ -25,11 +25,5 @@ class CustomValidationException extends Exception
             'message' => $this->getMessage(),
             'errors' => $this->errors,
         ], $this->code);
-
-        return response()->json([
-            'message' => $this->message,
-            'key' => $this->key,
-            'customValidation' => true,
-        ], $this->code);
     }
 }
