@@ -20,4 +20,9 @@ class Payment extends Model
         'parking_id',
         'paid_by_vehicle_id',
     ];
+
+    function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class, 'paid_by_vehicle_id');
+    }
 }

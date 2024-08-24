@@ -26,13 +26,25 @@ class ReportController
         if (isset($request['start_date'])) {
             $queryBuilder =  $queryBuilder->whereDate('created_at', '>=', Carbon::parse($request['start_date']));
         }
-        $dateWiseTransactions = $queryBuilder->select(DB::raw('DATE(created_at) as transaction_date'), DB::raw('COUNT(id) as transaction_count'), DB::raw('SUM(payable_amount) as total_payable'), DB::raw('SUM(paid_amount) as total_paid'), DB::raw('SUM(due_amount) as total_due'))
 
-            ->groupBy('transaction_date')
+        $dateWiseTransactions = $queryBuilder->select(
+            DB::raw('DATE(created_at) as transaction_date'),
+            DB::raw('COUNT(id) as transaction_count'),
+            DB::raw('SUM(payable_amount) as total_payable'),
+            DB::raw('SUM(paid_amount) as total_paid'),
+            DB::raw('SUM(due_amount) as total_due'),
+            'method', // Add any additional fields you need here
+            'status',
+            'received_by',
+            'parking_id',
+            'paid_by_vehicle_id',
+        )
+            ->with('vehicle')
+            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
         return response()->json([
-            'data'=> $dateWiseTransactions->get(),
+            'data'=> $dateWiseTransactions->paginate(50),
         ]);
     }
 

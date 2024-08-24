@@ -17,16 +17,16 @@ class ParkingResource extends Resource
      */
     public function toArray(Request $request): array
     {
-        $image = DNS1D::getBarcodePNG($this->barcode, 'C39+', 50, 1366);
+        $image = DNS1D::getBarcodePNG($this->barcode, 'C39', 1, 50);
 
         $checkoutURL = url('http://localhost:3000/parking-checkout/' . $this->barcode);
 
         // Generate the QR code
-        $url = QrCode::format('png')->size(200)->generate($checkoutURL);
+//        $url = QrCode::format('png')->size(200)->generate($checkoutURL);
         return [
             'id' => $this->id,
             'barcode_image' => $image,
-            'checkoutURL' => $url,
+//            'checkoutURL' => $url,
             'place_id' => $this->place_id,
             'category_id' => $this->category_id,
             'vehicle_id' => $this->vehicle_id,
