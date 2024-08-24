@@ -16,6 +16,7 @@ class UpdateRequest extends Request
     public function rules(): array
     {
         return [
+            'discount_amount' => 'required',
             'paid_amount' => 'required',
             'method' => 'required',
         ];

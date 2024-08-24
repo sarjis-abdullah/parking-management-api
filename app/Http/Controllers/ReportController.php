@@ -38,9 +38,10 @@ class ReportController
             'received_by',
             'parking_id',
             'paid_by_vehicle_id',
+            'discount_amount',
         )
             ->with('vehicle')
-            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id') // Group by all selected fields except for the aggregate fields
+            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
         return response()->json([
