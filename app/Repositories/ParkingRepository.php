@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Enums\ParkingStatus;
+use App\Enums\PaymentMethod;
 use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
@@ -204,11 +205,19 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         Slot::find($model->slot_id)->update([
             'status' => SlotStatus::available->value
         ]);
+
+        $payable_amount = (double)$data['payment']['payable_amount'];
+        $dueAmount = 0;
+        $paid_amount = (double)$data['payment']['paid_amount'];
+        if ($payable_amount != $paid_amount){
+            $dueAmount = $payable_amount - $paid_amount;
+        }
         Payment::create([
             'method' => $data['payment']['method'],
             'paid_amount' => $data['payment']['paid_amount'],
             'payable_amount' => $data['payment']['payable_amount'],
             'discount_amount' => $data['payment']['discount_amount'],
+            'due_amount' => $dueAmount,
             'received_by' => auth()->id(),
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,
