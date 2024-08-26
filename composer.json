@@ -12,7 +12,8 @@
         "laravel/tinker": "^2.9",
         "milon/barcode": "^11.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "spatie/laravel-permission": "^6.7"
+        "spatie/laravel-permission": "^6.7",
+        "stripe/stripe-php": "^15.7"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
