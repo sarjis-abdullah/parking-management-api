@@ -26,7 +26,12 @@ class MembershipTypeRepository extends EloquentBaseRepository implements Members
     public function update(\ArrayAccess $model, array $data): \ArrayAccess
     {
         $oldTariff = MembershipType::where('default', true)->first();
-        if ($oldTariff instanceof MembershipType && $oldTariff->default){
+        if (!isset($data['default']) || !$data['default']){
+            if ($oldTariff == null){
+                $data['default'] = true;
+            }
+        }
+        elseif ($oldTariff instanceof MembershipType && $oldTariff->default){
             $oldTariff->default = false;
             $oldTariff->save();
         }
