@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\RolesAndPermissions;
+use App\Http\Controllers\SslCommerzPaymentController;
 use App\Http\Controllers\UserController;
 use App\Models\Parking;
 use App\Models\Payment;
@@ -66,7 +67,6 @@ Route::get('/db:seed', function () {
 //    return view('parking-report');
     return view('format-1');
 });
-
 Route::get('/re', function () {
 //    $startDate = Carbon::parse('2024-01-01');
 //    $endDate = Carbon::parse('2024-07-31');
@@ -115,9 +115,38 @@ Route::get('/install-passport', function () {
 });
 
 
+Route::group(['prefix' => 'web/v1'], function () {
+    // SSLCOMMERZ Start
+    Route::get('/example1', [SslCommerzPaymentController::class, 'exampleEasyCheckout']);
+    Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout']);
+
+    Route::post('/pay', [SslCommerzPaymentController::class, 'pay']);
+    Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
+
+//    Route::post('/success', [SslCommerzPaymentController::class, 'success']);
+//    Route::post('/fail', [SslCommerzPaymentController::class, 'fail']);
+//    Route::post('/cancel', [SslCommerzPaymentController::class, 'cancel']);
+//
+//    Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn']);
+});
 Route::group(['prefix' => 'api/v1'], function () {
     Route::get('/', function (Request $request) {
         return response()->json(['message' => 'Hello API']);
+    });
+
+    Route::group(['prefix' => 'payment'], function () {
+        // SSLCOMMERZ Start
+        Route::get('/example1', [SslCommerzPaymentController::class, 'exampleEasyCheckout']);
+        Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout']);
+
+        Route::post('/pay', [SslCommerzPaymentController::class, 'pay']);
+        Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
+
+        Route::post('/success/{transactionId}', [SslCommerzPaymentController::class, 'success']);
+        Route::post('/fail/{transactionId}', [SslCommerzPaymentController::class, 'fail']);
+        Route::post('/cancel/{transactionId}', [SslCommerzPaymentController::class, 'cancel']);
+
+        Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn']);
     });
 
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
