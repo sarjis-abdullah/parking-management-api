@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 
 class PaymentController
 {
+    public function __construct()
+    {
+    }
+
     /**
      * @throws CustomValidationException
      */
@@ -28,5 +32,10 @@ class PaymentController
             'due_amount' => 0
         ]);
         return new PaymentResource($payment);
+    }
+
+    function repay(Request $request)
+    {
+
     }
 }

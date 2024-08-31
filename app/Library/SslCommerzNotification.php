@@ -208,7 +208,8 @@ class SslCommerzNotification extends AbstractSslCommerz
 
         if ($type == 'hosted') {
             if (!empty($formattedResponse['GatewayPageURL'])) {
-                $this->redirect($formattedResponse['GatewayPageURL']);
+//                $this->redirect($formattedResponse['GatewayPageURL']); //for web
+                return $formattedResponse['GatewayPageURL'];
             } else {
                 if (strpos($formattedResponse['failedreason'], 'Store Credential') === false) {
                     $message = $formattedResponse['failedreason'];

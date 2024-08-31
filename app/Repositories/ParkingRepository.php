@@ -7,6 +7,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
+use App\Library\SslCommerzNotification;
 use App\Models\Membership;
 use App\Models\MembershipType;
 use App\Models\Payment;
@@ -19,6 +20,7 @@ use App\Repositories\Contracts\PlaceInterface;
 use App\Repositories\Contracts\UserInterface;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ParkingRepository extends EloquentBaseRepository implements ParkingInterface
@@ -195,7 +197,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     /**
      * @throws CustomValidationException
      */
-    public function handleCheckout(\ArrayAccess $model, array $data): \ArrayAccess
+    public function handleCheckout(\ArrayAccess $model, array $data)
     {
         DB::beginTransaction();
 
@@ -212,8 +214,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         if ($payable_amount != $paid_amount){
             $dueAmount = $payable_amount - $paid_amount;
         }
-        Payment::create([
-            'method' => $data['payment']['method'],
+        $payment = Payment::create([
+            'method' => PaymentMethod::cash,
+//            'method' => $data['payment']['method'],
             'paid_amount' => $data['payment']['paid_amount'],
             'payable_amount' => $data['payment']['payable_amount'],
             'discount_amount' => $data['payment']['discount_amount'],
@@ -221,6 +224,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'received_by' => auth()->id(),
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,
+            'transaction_id' => uniqid(),
         ]);
         $vehicle->update([
             'status' => ParkingStatus::checked_out->value,
@@ -230,7 +234,90 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         DB::commit();
 
+        if ($payment->paid_amount > 0){
+            return [
+                'data' => [
+                    'redirect_url' => $this->payBySslCommerz($payment)
+                ]
+            ];
+        }
+
         return $item;
+    }
+
+    function repay(Request $request)
+    {
+
+    }
+    public function payBySslCommerz(Payment $payment)
+    {
+//        dd('exampleHostedCheckout');
+        # Here you have to receive all the order data to initate the payment.
+        # Let's say, your oder transaction informations are saving in a table called "orders"
+        # In "orders" table, order unique identity is "transaction_id". "status" field contain status of the transaction, "amount" is the order amount to be paid and "currency" is for storing Site Currency which will be checked with paid currency.
+
+        $post_data = array();
+        $post_data['total_amount'] = $payment->paid_amount; # You cant not pay less than 10
+        $post_data['currency'] = "BDT";
+        $post_data['tran_id'] = $payment->transaction_id; // tran_id must be unique
+
+        # CUSTOMER INFORMATION
+        $post_data['cus_name'] = 'Customer Name';
+        $post_data['cus_email'] = 'customer@mail.com';
+        $post_data['cus_add1'] = 'Customer Address';
+        $post_data['cus_add2'] = "";
+        $post_data['cus_city'] = "";
+        $post_data['cus_state'] = "";
+        $post_data['cus_postcode'] = "";
+        $post_data['cus_country'] = "Bangladesh";
+        $post_data['cus_phone'] = '8801XXXXXXXXX';
+        $post_data['cus_fax'] = "";
+
+        # SHIPMENT INFORMATION
+        $post_data['ship_name'] = "Store Test";
+        $post_data['ship_add1'] = "Dhaka";
+        $post_data['ship_add2'] = "Dhaka";
+        $post_data['ship_city'] = "Dhaka";
+        $post_data['ship_state'] = "Dhaka";
+        $post_data['ship_postcode'] = "1000";
+        $post_data['ship_phone'] = "";
+        $post_data['ship_country'] = "Bangladesh";
+
+        $post_data['shipping_method'] = "NO";
+        $post_data['product_name'] = "Computer";
+        $post_data['product_category'] = "Goods";
+        $post_data['product_profile'] = "physical-goods";
+
+        # OPTIONAL PARAMETERS
+        $post_data['value_a'] = "ref001";
+        $post_data['value_b'] = "ref002";
+        $post_data['value_c'] = "ref003";
+        $post_data['value_d'] = "ref004";
+
+        #Before  going to initiate the payment order status need to insert or update as Pending.
+//        $update_product = DB::table('orders')
+//            ->where('transaction_id', $post_data['tran_id'])
+//            ->updateOrInsert([
+//                'name' => $post_data['cus_name'],
+//                'email' => $post_data['cus_email'],
+//                'phone' => $post_data['cus_phone'],
+//                'amount' => $post_data['total_amount'],
+//                'status' => 'Pending',
+//                'address' => $post_data['cus_add1'],
+//                'transaction_id' => $post_data['tran_id'],
+//                'currency' => $post_data['currency']
+//            ]);
+
+        $sslc = new SslCommerzNotification();
+
+        # initiate(Transaction Data , false: Redirect to SSLCOMMERZ gateway/ true: Show all the Payement gateway here )
+        return $sslc->makePayment($post_data, 'hosted');
+
+        if (!is_array($payment_options)) {
+            print_r($payment_options);
+            $payment_options = array();
+        }
+
     }
 
     /**

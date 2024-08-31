@@ -136,11 +136,12 @@ Route::group(['prefix' => 'api/v1'], function () {
 
     Route::group(['prefix' => 'payment'], function () {
         // SSLCOMMERZ Start
-        Route::get('/example1', [SslCommerzPaymentController::class, 'exampleEasyCheckout']);
-        Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout']);
+//        Route::get('/example1', [SslCommerzPaymentController::class, 'exampleEasyCheckout']);
+//        Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout']);
 
         Route::post('/pay', [SslCommerzPaymentController::class, 'pay']);
-        Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
+        Route::get('/repay/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'repay']);
+//        Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
 
         Route::post('/success/{transactionId}', [SslCommerzPaymentController::class, 'success']);
         Route::post('/fail/{transactionId}', [SslCommerzPaymentController::class, 'fail']);

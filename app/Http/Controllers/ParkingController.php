@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentStatus;
 use App\Http\Requests\Parking\CheckoutRequest;
 use App\Http\Requests\Parking\IndexRequest;
 use App\Http\Requests\Parking\StoreRequest;
@@ -9,7 +10,9 @@ use App\Http\Requests\Parking\UpdateRequest;
 use App\Http\Resources\ParkingResource;
 use App\Http\Resources\ParkingResourceCollection;
 use App\Models\Parking;
+use App\Models\Payment;
 use App\Repositories\Contracts\ParkingInterface;
+use Illuminate\Http\Request;
 
 class ParkingController
 {
@@ -45,6 +48,20 @@ class ParkingController
         return new ParkingResource($parking);
     }
 
+    function repay(Request $request, $paymentId)
+    {
+        $payment = Payment::find($paymentId);
+//        if ($payment->status == PaymentStatus::failed->value)
+        $payment->update([
+            'status' => PaymentStatus::pending
+        ]);
+        return response()->json([
+            'data' => [
+                'redirect_url' => $this->interface->payBySslCommerz($payment)
+            ]
+        ]);
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -58,7 +75,7 @@ class ParkingController
      */
     public function handleCheckout(CheckoutRequest $request, Parking $parking)
     {
-        $list = $this->interface->handleCheckout($parking, $request->all());
+        return $this->interface->handleCheckout($parking, $request->all());
         return new ParkingResource($list);
     }
 

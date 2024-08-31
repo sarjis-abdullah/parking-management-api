@@ -19,6 +19,7 @@ class Payment extends Model
         'received_by',
         'parking_id',
         'paid_by_vehicle_id',
+        'transaction_id',
     ];
 
     function vehicle()

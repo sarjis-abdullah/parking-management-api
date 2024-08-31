@@ -13,5 +13,5 @@ interface ParkingInterface extends BaseRepository
      * @param array $data
      * @return ArrayAccess
      */
-    public function handleCheckout(ArrayAccess $model, array $data): ArrayAccess;
+    public function handleCheckout(ArrayAccess $model, array $data);
 }

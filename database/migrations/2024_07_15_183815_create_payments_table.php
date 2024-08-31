@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreignId( 'received_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId( 'paid_by_vehicle_id')->constrained('vehicles')->onDelete('cascade');
             $table->foreignId( 'parking_id')->nullable()->constrained('parkings')->nullOnDelete();
+            $table->string('transaction_id', 255)->nullable();
             $table->timestamps();
         });
     }
