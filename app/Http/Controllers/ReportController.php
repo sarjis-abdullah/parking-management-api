@@ -52,8 +52,12 @@ class ReportController
             ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
+        $limit = !empty($request['per_page']) ? (int)$request['per_page'] : 50; // it's needed for pagination
+        $orderBy = !empty($request['order_by']) ? $request['order_by'] : 'id';
+        $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
+        $queryBuilder->orderBy($orderBy, $orderDirection);
         return response()->json([
-            'data'=> $dateWiseTransactions->paginate(50),
+            'data'=> $dateWiseTransactions->paginate($limit),
         ]);
     }
 
