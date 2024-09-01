@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Enums\ParkingStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
 use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
@@ -211,8 +212,10 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $payable_amount = (double)$data['payment']['payable_amount'];
         $dueAmount = 0;
         $paid_amount = (double)$data['payment']['paid_amount'];
+        $payment_type = 'full';
         if ($payable_amount != $paid_amount){
             $dueAmount = $payable_amount - $paid_amount;
+            $payment_type = 'partial';
         }
         $payment = Payment::create([
             'method' => PaymentMethod::cash,
@@ -221,6 +224,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'payable_amount' => $data['payment']['payable_amount'],
             'discount_amount' => $data['payment']['discount_amount'],
             'due_amount' => $dueAmount,
+            'payment_type' => $payment_type,
             'received_by' => auth()->id(),
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,
@@ -234,10 +238,14 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         DB::commit();
 
+        $paymentData = [
+            'amount' => $payment->paid_amount,
+            'transaction_id' => $payment->transaction_id,
+        ];
         if ($payment->paid_amount > 0){
             return [
                 'data' => [
-                    'redirect_url' => $this->payBySslCommerz($payment)
+                    'redirect_url' => $this->payBySslCommerz($paymentData)
                 ]
             ];
         }
@@ -249,7 +257,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     {
 
     }
-    public function payBySslCommerz(Payment $payment)
+    public function payBySslCommerz($payment)
     {
 //        dd('exampleHostedCheckout');
         # Here you have to receive all the order data to initate the payment.
@@ -257,9 +265,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         # In "orders" table, order unique identity is "transaction_id". "status" field contain status of the transaction, "amount" is the order amount to be paid and "currency" is for storing Site Currency which will be checked with paid currency.
 
         $post_data = array();
-        $post_data['total_amount'] = $payment->paid_amount; # You cant not pay less than 10
+        $post_data['total_amount'] = $payment['amount']; # You cant not pay less than 10
         $post_data['currency'] = "BDT";
-        $post_data['tran_id'] = $payment->transaction_id; // tran_id must be unique
+        $post_data['tran_id'] = $payment['transaction_id']; // tran_id must be unique
 
         # CUSTOMER INFORMATION
         $post_data['cus_name'] = 'Customer Name';
@@ -294,30 +302,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $post_data['value_c'] = "ref003";
         $post_data['value_d'] = "ref004";
 
-        #Before  going to initiate the payment order status need to insert or update as Pending.
-//        $update_product = DB::table('orders')
-//            ->where('transaction_id', $post_data['tran_id'])
-//            ->updateOrInsert([
-//                'name' => $post_data['cus_name'],
-//                'email' => $post_data['cus_email'],
-//                'phone' => $post_data['cus_phone'],
-//                'amount' => $post_data['total_amount'],
-//                'status' => 'Pending',
-//                'address' => $post_data['cus_add1'],
-//                'transaction_id' => $post_data['tran_id'],
-//                'currency' => $post_data['currency']
-//            ]);
-
         $sslc = new SslCommerzNotification();
 
-        # initiate(Transaction Data , false: Redirect to SSLCOMMERZ gateway/ true: Show all the Payement gateway here )
         return $sslc->makePayment($post_data, 'hosted');
-
-        if (!is_array($payment_options)) {
-            print_r($payment_options);
-            $payment_options = array();
-        }
-
     }
 
     /**

@@ -51,13 +51,32 @@ class ParkingController
     function repay(Request $request, $paymentId)
     {
         $payment = Payment::find($paymentId);
-//        if ($payment->status == PaymentStatus::failed->value)
-        $payment->update([
+        $updateData = [
             'status' => PaymentStatus::pending
-        ]);
+        ];
+
+        $payment->update($updateData);
+        $paymentData = [
+            'amount' => $payment->paid_amount,
+            'transaction_id' => $payment->transaction_id,
+        ];
         return response()->json([
             'data' => [
-                'redirect_url' => $this->interface->payBySslCommerz($payment)
+                'redirect_url' => $this->interface->payBySslCommerz($paymentData)
+            ]
+        ]);
+    }
+    function payDue(Request $request, $paymentId)
+    {
+        $payment = Payment::find($paymentId);
+
+        $paymentData = [
+            'amount' => $payment->due_amount,
+            'transaction_id' => $payment->transaction_id,
+        ];
+        return response()->json([
+            'data' => [
+                'redirect_url' => $this->interface->payBySslCommerz($paymentData)
             ]
         ]);
     }

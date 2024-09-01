@@ -146,15 +146,23 @@ class SslCommerzPaymentController
 
     public function success(Request $request, $transactionId): string
     {
-        $order_details = Payment::where('transaction_id', $transactionId)->first();
+        $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if ($order_details->status == PaymentStatus::pending->value) {
-            $order_details->update([
+        if ($payment->status == PaymentStatus::pending->value) {
+            $payment->update([
                 'status' => PaymentStatus::success,
                 'method' => PaymentMethod::ssl_commerz
             ]);
             return redirect(env('CLIENT_URL').'/success');
-        } else if ($order_details->status == PaymentStatus::success || $order_details->status == PaymentStatus::complete) {
+        } else if ($payment->status == PaymentStatus::success->value && $payment->payment_type == 'partial'){
+            $payment->update([
+                'paid_amount' => $payment->payable_amount,
+                'due_amount' => 0,
+                'payment_type' => 'full',
+            ]);
+            return redirect(env('CLIENT_URL').'/success');
+        }
+        else if ($payment->status == PaymentStatus::success || $payment->status == PaymentStatus::complete) {
             return redirect(env('CLIENT_URL').'/success');
         } else {
             return redirect(env('CLIENT_URL').'/failed');
@@ -163,12 +171,12 @@ class SslCommerzPaymentController
 
     public function fail(Request $request, $transactionId)
     {
-        $order_details = Payment::where('transaction_id', $transactionId)->first();
+        $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if ($order_details->status == PaymentStatus::pending->value) {
-            $order_details->update(['status' => PaymentStatus::failed]);
+        if ($payment->status == PaymentStatus::pending->value) {
+            $payment->update(['status' => PaymentStatus::failed]);
             return redirect(env('CLIENT_URL').'/failed');
-        } else if ($order_details->status == 'Processing' || $order_details->status == 'Complete') {
+        } else if ($payment->status == 'Processing' || $payment->status == 'Complete') {
             return redirect(env('CLIENT_URL').'/success');
         } else {
             return redirect(env('CLIENT_URL').'/failed');
@@ -178,12 +186,12 @@ class SslCommerzPaymentController
 
     public function cancel(Request $request, $transactionId)
     {
-        $order_details = Payment::where('transaction_id', $transactionId)->first();
+        $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if ($order_details->status == PaymentStatus::pending->value) {
-            $order_details->update(['status' => PaymentStatus::canceled]);
+        if ($payment->status == PaymentStatus::pending->value) {
+            $payment->update(['status' => PaymentStatus::canceled]);
             return redirect(env('CLIENT_URL').'/cancel');
-        } else if ($order_details->status == 'Processing' || $order_details->status == 'Complete') {
+        } else if ($payment->status == 'Processing' || $payment->status == 'Complete') {
             return redirect(env('CLIENT_URL').'/success');
         } else {
             return redirect(env('CLIENT_URL').'/failed');
@@ -201,22 +209,22 @@ class SslCommerzPaymentController
             $transactionId = $tran_id;
 
             #Check order status in order tabel against the transaction id or order id.
-            $order_details = Payment::where('transaction_id', $transactionId)->first();
+            $payment = Payment::where('transaction_id', $transactionId)->first();
 
-            if ($order_details->status == 'Pending') {
+            if ($payment->status == 'Pending') {
                 $sslc = new SslCommerzNotification();
-                $validation = $sslc->orderValidate($request->all(), $tran_id, $order_details->amount, $order_details->currency);
+                $validation = $sslc->orderValidate($request->all(), $tran_id, $payment->amount, $payment->currency);
                 if ($validation == TRUE) {
                     /*
                     That means IPN worked. Here you need to update order status
                     in order table as Processing or Complete.
                     Here you can also sent sms or email for successful transaction to customer
                     */
-                    $order_details->update(['status' => 'Processing']);
+                    $payment->update(['status' => 'Processing']);
 
                     echo "Transaction is successfully Completed";
                 }
-            } else if ($order_details->status == 'Processing' || $order_details->status == 'Complete') {
+            } else if ($payment->status == 'Processing' || $payment->status == 'Complete') {
 
                 #That means Order status already updated. No need to udate database.
 
