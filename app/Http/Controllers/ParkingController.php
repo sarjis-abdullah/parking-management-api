@@ -57,7 +57,7 @@ class ParkingController
 
         $payment->update($updateData);
         $paymentData = [
-            'amount' => $payment->paid_amount,
+            'amount' => $payment->payable_amount,
             'transaction_id' => $payment->transaction_id,
         ];
         return response()->json([
