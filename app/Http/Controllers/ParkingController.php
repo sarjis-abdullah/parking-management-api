@@ -51,15 +51,21 @@ class ParkingController
     function repay(Request $request, $paymentId)
     {
         $payment = Payment::find($paymentId);
-        $updateData = [
-            'status' => PaymentStatus::pending
-        ];
 
-        $payment->update($updateData);
+        $amount = $payment->payable_amount;;
+        if ($payment->payment_type == 'partial'){
+            $amount = $payment->due_amount;
+        }
         $paymentData = [
-            'amount' => $payment->payable_amount,
+            'amount' => $amount,
             'transaction_id' => $payment->transaction_id,
         ];
+        $routeName = $request->route()->getName();
+
+        if ($routeName == 'scan.repay'){
+            $paymentData['scan-checkout'] = true;
+        }
+
         return response()->json([
             'data' => [
                 'redirect_url' => $this->interface->payBySslCommerz($paymentData)
@@ -70,10 +76,20 @@ class ParkingController
     {
         $payment = Payment::find($paymentId);
 
+        $amount = $payment->due_amount;
+        if ($payment->payment_type == 'full' and $payment->status = PaymentStatus::pending->value){
+            $amount = $payment->payable_amount;
+        }
         $paymentData = [
-            'amount' => $payment->due_amount,
+            'amount' => $amount,
             'transaction_id' => $payment->transaction_id,
         ];
+        $routeName = $request->route()->getName();
+
+        if ($routeName == 'scan.payDue'){
+            $paymentData['scan-checkout'] = true;
+        }
+
         return response()->json([
             'data' => [
                 'redirect_url' => $this->interface->payBySslCommerz($paymentData)

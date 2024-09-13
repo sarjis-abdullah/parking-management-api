@@ -225,7 +225,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'discount_amount' => $data['payment']['discount_amount'],
             'due_amount' => $dueAmount,
             'payment_type' => $payment_type,
-            'received_by' => auth()->id(),
+//            'received_by' => auth()->id(),
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,
             'transaction_id' => uniqid(),
@@ -301,6 +301,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $post_data['value_b'] = "ref002";
         $post_data['value_c'] = "ref003";
         $post_data['value_d'] = "ref004";
+        if (isset($payment['scan-checkout']))
+            $post_data['scan-checkout'] = $payment['scan-checkout'];
 
         $sslc = new SslCommerzNotification();
 

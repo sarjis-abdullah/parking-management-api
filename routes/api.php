@@ -140,8 +140,10 @@ Route::group(['prefix' => 'api/v1'], function () {
 //        Route::get('/example2', [SslCommerzPaymentController::class, 'exampleHostedCheckout']);
 
         Route::post('/pay', [SslCommerzPaymentController::class, 'pay']);
-        Route::get('/repay/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'repay']);
-        Route::get('/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue']);
+        Route::get('/repay/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'repay'])->name('repay');
+        Route::get('/scan/repay/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'repay'])->name('scan.repay');
+        Route::get('/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue'])->name('payDue');
+        Route::get('/scan/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue'])->name('scan.payDue');
 //        Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
 
         Route::post('/success/{transactionId}', [SslCommerzPaymentController::class, 'success']);
@@ -149,8 +151,12 @@ Route::group(['prefix' => 'api/v1'], function () {
         Route::post('/cancel/{transactionId}', [SslCommerzPaymentController::class, 'cancel']);
 
         Route::post('/ipn', [SslCommerzPaymentController::class, 'ipn']);
-    });
 
+
+
+    });
+    Route::get('parking', [\App\Http\Controllers\ParkingController::class, 'index']);
+    Route::put('parking-check-out/{parking}', [\App\Http\Controllers\ParkingController::class, 'handleCheckout']);
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
     Route::post('/register', [UserController::class, 'register'])->name('user.register');
     Route::middleware(['auth:api'])->group(function () {
@@ -160,10 +166,10 @@ Route::group(['prefix' => 'api/v1'], function () {
         )->group(function () {
             Route::apiResource('membership', \App\Http\Controllers\MembershipController::class);
             Route::apiResource('vehicle', \App\Http\Controllers\VehicleController::class);
-            Route::apiResource('parking', \App\Http\Controllers\ParkingController::class);
+            Route::apiResource('parking', \App\Http\Controllers\ParkingController::class)->except('index');
             Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
 
-            Route::put('parking-check-out/{parking}', [\App\Http\Controllers\ParkingController::class, 'handleCheckout']);
+
             Route::get('place', [\App\Http\Controllers\PlaceController::class, 'index']);
             Route::get('floor', [\App\Http\Controllers\FloorController::class, 'index']);
             Route::get('category', [\App\Http\Controllers\CategoryController::class, 'index']);

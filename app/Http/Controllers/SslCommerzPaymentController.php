@@ -147,14 +147,18 @@ class SslCommerzPaymentController
     public function success(Request $request, $transactionId): string
     {
         $payment = Payment::where('transaction_id', $transactionId)->first();
+        $success = PaymentStatus::success->value;
+        $complete = PaymentStatus::complete->value;
+        $pending = PaymentStatus::pending->value;
+        $status = $payment->status;
 
-        if ($payment->status == PaymentStatus::pending->value) {
+        if ($payment->status == $pending) {
             $payment->update([
                 'status' => PaymentStatus::success,
                 'method' => PaymentMethod::ssl_commerz
             ]);
             return redirect(env('CLIENT_URL').'/success');
-        } else if ($payment->status == PaymentStatus::success->value && $payment->payment_type == 'partial'){
+        } else if ($payment->status == $success && $payment->payment_type == 'partial'){
             $payment->update([
                 'paid_amount' => $payment->payable_amount,
                 'due_amount' => 0,
@@ -162,7 +166,7 @@ class SslCommerzPaymentController
             ]);
             return redirect(env('CLIENT_URL').'/success');
         }
-        else if ($payment->status == PaymentStatus::success || $payment->status == PaymentStatus::complete) {
+        else if ($status == $success || $status == $complete) {
             return redirect(env('CLIENT_URL').'/success');
         } else {
             return redirect(env('CLIENT_URL').'/failed');
@@ -172,11 +176,15 @@ class SslCommerzPaymentController
     public function fail(Request $request, $transactionId)
     {
         $payment = Payment::where('transaction_id', $transactionId)->first();
+        $success = PaymentStatus::success->value;
+        $complete = PaymentStatus::complete->value;
+        $pending = PaymentStatus::pending->value;
+        $status = $payment->status;
 
-        if ($payment->status == PaymentStatus::pending->value) {
+        if ($payment->status == $pending) {
             $payment->update(['status' => PaymentStatus::failed]);
             return redirect(env('CLIENT_URL').'/failed');
-        } else if ($payment->status == 'Processing' || $payment->status == 'Complete') {
+        } else if ($status == $success || $status == $complete) {
             return redirect(env('CLIENT_URL').'/success');
         } else {
             return redirect(env('CLIENT_URL').'/failed');
@@ -188,10 +196,14 @@ class SslCommerzPaymentController
     {
         $payment = Payment::where('transaction_id', $transactionId)->first();
 
-        if ($payment->status == PaymentStatus::pending->value) {
+        $success = PaymentStatus::success->value;
+        $complete = PaymentStatus::complete->value;
+        $pending = PaymentStatus::pending->value;
+        $status = $payment->status;
+        if ($status == $pending) {
             $payment->update(['status' => PaymentStatus::canceled]);
             return redirect(env('CLIENT_URL').'/cancel');
-        } else if ($payment->status == 'Processing' || $payment->status == 'Complete') {
+        } else if ($status == $success || $status == $complete) {
             return redirect(env('CLIENT_URL').'/success');
         } else {
             return redirect(env('CLIENT_URL').'/failed');
@@ -200,7 +212,6 @@ class SslCommerzPaymentController
 
     public function ipn(Request $request)
     {
-//        dd('ipn payment');
         #Received all the payement information from the gateway
         if ($request->input('tran_id')) #Check transation id is posted or not.
         {
