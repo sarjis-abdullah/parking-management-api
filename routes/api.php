@@ -185,6 +185,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::group(['prefix' => 'report'], function () {
                 Route::get('/transaction', [\App\Http\Controllers\ReportController::class, 'getTransactionReport'])->name('transaction.report');
                 Route::get('/vehicle', [\App\Http\Controllers\ReportController::class, 'getVehicleReport'])->name('vehicle.report');
+                Route::get('/slot', [\App\Http\Controllers\ReportController::class, 'getSlotReport'])->name('slot.report');
             });
             Route::apiResource('user', UserController::class);
             Route::apiResource('place', \App\Http\Controllers\PlaceController::class)->except('index');

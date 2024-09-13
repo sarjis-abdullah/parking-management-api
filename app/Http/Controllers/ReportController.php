@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Report\Transaction\IndexRequest as TransactionIndexRequest;
 use App\Http\Requests\Report\Vehicle\IndexRequest as VehicleIndexRequest;
+use App\Models\Membership;
 use App\Models\Parking;
 use App\Models\Payment;
+use App\Models\Slot;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,6 +59,7 @@ class ReportController
         $orderBy = !empty($request['order_by']) ? $request['order_by'] : 'id';
         $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
         $queryBuilder->orderBy($orderBy, $orderDirection);
+
         return response()->json([
             'data'=> $dateWiseTransactions->paginate($limit),
         ]);
@@ -76,14 +80,36 @@ class ReportController
             $queryBuilder =  $queryBuilder->whereDate('in_time', '>=', Carbon::parse($request['start_date']));
         }
 
-        $dateWiseVehicleEntries = $queryBuilder->select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'))
+        $dateWiseVehicleEntries = $queryBuilder->select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'), 'id')
             ->whereNotNull('in_time')
-            ->groupBy('entry_date')
-            ->orderBy('entry_date')
-            ->get();
+            ->groupBy('entry_date', 'id')
+            ->orderBy('entry_date');
+
+        $limit = !empty($request['per_page']) ? (int)$request['per_page'] : 50; // it's needed for pagination
+        $orderBy = !empty($request['order_by']) ? $request['order_by'] : 'id';
+        $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
+        $queryBuilder->orderBy($orderBy, $orderDirection);
 
         return response()->json([
-            'data'=> $dateWiseVehicleEntries,
+            'data'=> $dateWiseVehicleEntries->paginate($limit),
+        ]);
+    }
+
+    function getSlotReport()
+    {
+        $bookedSlots = Slot::where('status', 'occupied')->count();
+        $availableSlots = Slot::where('status', 'available')->count();
+        $totalUser = User::count();
+        $totalMember = Membership::count();
+
+        return response()->json([
+            'data'=> [
+                'Total slots' => $bookedSlots + $availableSlots,
+                'Currently parking' => $bookedSlots,
+                'Available slots' => $availableSlots,
+                'Total user' => $totalUser,
+                'Total membership' => $totalMember,
+            ],
         ]);
     }
 }
