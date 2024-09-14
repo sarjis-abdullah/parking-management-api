@@ -72,26 +72,27 @@ class ReportController
         if (isset($request->vehicle_id)){
             $queryBuilder = $queryBuilder->where('vehicle_id', $request->vehicle_id);
         }
+
         if (isset($request['end_date'])) {
-            $queryBuilder  =  $queryBuilder->whereDate('in_time', '<=', Carbon::parse($request['end_date']));
+            $queryBuilder = $queryBuilder->whereDate('in_time', '<=', Carbon::parse($request['end_date']));
         }
 
         if (isset($request['start_date'])) {
-            $queryBuilder =  $queryBuilder->whereDate('in_time', '>=', Carbon::parse($request['start_date']));
+            $queryBuilder = $queryBuilder->whereDate('in_time', '>=', Carbon::parse($request['start_date']));
         }
 
-        $dateWiseVehicleEntries = $queryBuilder->select(DB::raw('DATE(in_time) as entry_date'), DB::raw('COUNT(id) as vehicle_entries'), 'id')
-            ->whereNotNull('in_time')
-            ->groupBy('entry_date', 'id')
-            ->orderBy('entry_date');
+        $dateWiseVehicleEntries = $queryBuilder->select(
+            DB::raw('DATE(in_time) as entry_date'),   // Extract the date part from in_time
+            DB::raw('COUNT(id) as vehicle_entries')   // Count the vehicles for each date
+        )
+            ->whereNotNull('in_time')                     // Make sure in_time is not null
+            ->groupBy('entry_date')                       // Group by the date part
+            ->orderBy($orderBy ?? 'entry_date', $orderDirection ?? 'desc'); // Order results
 
-        $limit = !empty($request['per_page']) ? (int)$request['per_page'] : 50; // it's needed for pagination
-        $orderBy = !empty($request['order_by']) ? $request['order_by'] : 'id';
-        $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
-        $queryBuilder->orderBy($orderBy, $orderDirection);
+        $limit = !empty($request['per_page']) ? (int) $request['per_page'] : 50;
 
         return response()->json([
-            'data'=> $dateWiseVehicleEntries->paginate($limit),
+            'data' => $dateWiseVehicleEntries->paginate($limit),  // Paginate the results
         ]);
     }
 
