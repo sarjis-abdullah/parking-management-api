@@ -96,6 +96,36 @@ class ReportController
         ]);
     }
 
+    function getDetailVehicleReport(Request $request)
+    {
+        $detailedEntries = Parking::query()
+            ->select(
+//                'place_id',
+//                'category_id',
+//                'slot_id',
+//                'floor_id',
+//                'tariff_id',
+                'vehicle_id',
+//                'barcode',
+                'in_time',
+                'out_time',
+//                'duration',
+//                'created_by',
+//                'updated_by',
+//                'deleted_by'
+            )
+            ->with('vehicle')
+            ->whereDate('in_time', '=', Carbon::parse($request->entry_date)) // Get records for the selected date
+            ->whereNotNull('in_time')
+            ->get();
+
+        return response()->json([
+            'data' => [
+                'details' => $detailedEntries  // Detailed vehicle entries for the clicked date
+            ]  // Detailed vehicle entries for the clicked date
+        ]);
+    }
+
     function getSlotReport()
     {
         $bookedSlots = Slot::where('status', 'occupied')->count();
