@@ -17,6 +17,7 @@ class UpdateRequest extends Request
     {
         return [
             'name' => 'nullable|string',
+            'active' => 'in:0,1',
 //            'vehicle_id' => 'integer|exists:vehicles,id',
             'membership_type_id' => 'integer|exists:membership_types,id',
         ];

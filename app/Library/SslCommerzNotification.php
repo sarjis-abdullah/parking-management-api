@@ -287,12 +287,23 @@ class SslCommerzNotification extends AbstractSslCommerz
 
         ##  Customized or Additional Parameters
         $this->setAdditionalInfo($requestData);
+        $this->setPaymentInfo($requestData);
     }
 
     public function setAuthenticationInfo()
     {
         $this->data['store_id'] = $this->getStoreId();
         $this->data['store_passwd'] = $this->getStorePassword();
+
+        return $this->data;
+    }
+    public function setPaymentInfo($requestData)
+    {
+        if (isset($requestData['batch_due_payment'])){
+            $this->data['batch_due_payment'] = $requestData['batch_due_payment'];
+            $this->data['start_date'] = $requestData['start_date'];
+            $this->data['end_date'] = $requestData['end_date'];
+        }
 
         return $this->data;
     }

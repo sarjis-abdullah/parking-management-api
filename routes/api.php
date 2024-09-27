@@ -144,6 +144,7 @@ Route::group(['prefix' => 'api/v1'], function () {
         Route::get('/scan/repay/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'repay'])->name('scan.repay');
         Route::get('/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue'])->name('payDue');
         Route::get('/scan/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue'])->name('scan.payDue');
+        Route::get('/pay-all-due', [\App\Http\Controllers\ParkingController::class, 'payAllDue'])->name('pay-all-due');
 //        Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
 
         Route::post('/success/{transactionId}', [SslCommerzPaymentController::class, 'success']);

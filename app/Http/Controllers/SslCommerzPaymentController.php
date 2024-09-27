@@ -146,30 +146,66 @@ class SslCommerzPaymentController
 
     public function success(Request $request, $transactionId): string
     {
-        $payment = Payment::where('transaction_id', $transactionId)->first();
+        $queryBuilder = Payment::query();
+        $queryBuilder = $queryBuilder->where('transaction_id', $transactionId);
+        $totalPayableAmount = $queryBuilder->sum('payable_amount');
+        $totalDueAmount = $queryBuilder->sum('due_amount');
+
+        $payments = $queryBuilder->get();
         $success = PaymentStatus::success->value;
         $complete = PaymentStatus::complete->value;
         $pending = PaymentStatus::pending->value;
-        $status = $payment->status;
 
-        if ($payment->status == $pending) {
-            $payment->update([
-                'status' => PaymentStatus::success,
-                'method' => PaymentMethod::ssl_commerz
-            ]);
-            return redirect(env('CLIENT_URL').'/success');
-        } else if ($payment->status == $success && $payment->payment_type == 'partial'){
-            $payment->update([
-                'paid_amount' => $payment->payable_amount,
-                'due_amount' => 0,
-                'payment_type' => 'full',
-            ]);
+        if ($payments->count() > 1) {
+            foreach ($payments as $payment) {
+                $status = $payment->status;
+                if ($payment->status == $pending) {
+                    $payment->update([
+                        'status'        => PaymentStatus::success,
+                        'method'        => PaymentMethod::ssl_commerz,
+                        'paid_amount'   => $payment->payable_amount,
+                    ]);
+                    continue;
+                } else if ($payment->status == $success && $payment->payment_type == 'partial'){
+                    $payment->update([
+                        'paid_amount'   => $payment->payable_amount,
+                        'due_amount'    => 0,
+                        'payment_type'  => 'full',
+                    ]);
+                    continue;
+                }
+                else if ($status == $success || $status == $complete) {
+                    continue;
+                } else {
+                    continue;
+                }
+            }
             return redirect(env('CLIENT_URL').'/success');
         }
-        else if ($status == $success || $status == $complete) {
-            return redirect(env('CLIENT_URL').'/success');
-        } else {
-            return redirect(env('CLIENT_URL').'/failed');
+        else{
+            $payment = $queryBuilder->first();
+
+            $status = $payment->status;
+
+            if ($payment->status == $pending) {
+                $payment->update([
+                    'status' => PaymentStatus::success,
+                    'method' => PaymentMethod::ssl_commerz
+                ]);
+                return redirect(env('CLIENT_URL').'/success');
+            } else if ($payment->status == $success && $payment->payment_type == 'partial'){
+                $payment->update([
+                    'paid_amount' => $payment->payable_amount,
+                    'due_amount' => 0,
+                    'payment_type' => 'full',
+                ]);
+                return redirect(env('CLIENT_URL').'/success');
+            }
+            else if ($status == $success || $status == $complete) {
+                return redirect(env('CLIENT_URL').'/success');
+            } else {
+                return redirect(env('CLIENT_URL').'/failed');
+            }
         }
     }
 

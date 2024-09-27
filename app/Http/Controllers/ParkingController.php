@@ -7,11 +7,13 @@ use App\Http\Requests\Parking\CheckoutRequest;
 use App\Http\Requests\Parking\IndexRequest;
 use App\Http\Requests\Parking\StoreRequest;
 use App\Http\Requests\Parking\UpdateRequest;
+use App\Http\Requests\Payment\PayAllDueRequest;
 use App\Http\Resources\ParkingResource;
 use App\Http\Resources\ParkingResourceCollection;
 use App\Models\Parking;
 use App\Models\Payment;
 use App\Repositories\Contracts\ParkingInterface;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ParkingController
@@ -89,6 +91,72 @@ class ParkingController
         if ($routeName == 'scan.payDue'){
             $paymentData['scan-checkout'] = true;
         }
+
+        return response()->json([
+            'data' => [
+                'redirect_url' => $this->interface->payBySslCommerz($paymentData)
+            ]
+        ]);
+    }
+
+    function payAllDue(PayAllDueRequest $request): \Illuminate\Http\JsonResponse
+    {
+
+        $queryBuilder = Payment::query();
+
+        $queryBuilder = $queryBuilder->where('vehicle_id' , $request->vehicle_id)
+            ->where('payment_type', '=', $request['payment_type']);
+
+        if (isset($request['end_date'])) {
+            $queryBuilder  =  $queryBuilder->whereDate('created_at', '<=', Carbon::parse($request['end_date']));
+        }
+
+        if (isset($request['start_date'])) {
+            $queryBuilder =  $queryBuilder->whereDate('created_at', '>=', Carbon::parse($request['start_date']));
+        }
+        if (isset($request['status'])) {
+            $queryBuilder =  $queryBuilder->where('status', '=', $request['status']);
+        }
+
+        $totalDueAmount = $queryBuilder->sum('due_amount');
+
+        $updatedTransactionId = uniqid(); // The new transaction ID you want to update
+        $queryBuilder->update(['transaction_id' => $updatedTransactionId]);
+
+        $paymentData = [
+            'amount' => $totalDueAmount,
+            'transaction_id' => $updatedTransactionId,
+        ];
+
+        return response()->json([
+            'data' => [
+                'redirect_url' => $this->interface->payBySslCommerz($paymentData)
+            ]
+        ]);
+    }
+
+    function repayAll(Request $request): \Illuminate\Http\JsonResponse
+    {
+
+        $queryBuilder = Payment::query();
+
+        if (isset($request['end_date'])) {
+            $queryBuilder  =  $queryBuilder->whereDate('created_at', '<=', Carbon::parse($request['end_date']));
+        }
+
+        if (isset($request['start_date'])) {
+            $queryBuilder =  $queryBuilder->whereDate('created_at', '>=', Carbon::parse($request['start_date']));
+        }
+
+        $totalDueAmount = $queryBuilder->sum('payable_amount');
+
+        $updatedTransactionId = uniqid(); // The new transaction ID you want to update
+        $queryBuilder->update(['transaction_id' => $updatedTransactionId]);
+
+        $paymentData = [
+            'amount' => $totalDueAmount,
+            'transaction_id' => $updatedTransactionId,
+        ];
 
         return response()->json([
             'data' => [

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId( 'membership_type_id')->nullable()->constrained('membership_types');
             $table->foreignId( 'vehicle_id')->nullable()->constrained('vehicles');
             $table->integer('points')->default(0);
+            $table->integer('active')->default(0);
             $table->timestamps();
         });
     }

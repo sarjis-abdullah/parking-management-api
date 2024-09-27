@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentStatus;
 use App\Http\Requests\Report\Transaction\IndexRequest as TransactionIndexRequest;
 use App\Http\Requests\Report\Vehicle\IndexRequest as VehicleIndexRequest;
 use App\Models\Membership;
@@ -132,6 +133,8 @@ class ReportController
         $availableSlots = Slot::where('status', 'available')->count();
         $totalUser = User::count();
         $totalMember = Membership::count();
+        $payments = Payment::where('status', '=', PaymentStatus::success)->whereDate('created_at', Carbon::today())->sum('paid_amount');
+
 
         return response()->json([
             'data'=> [
@@ -140,6 +143,7 @@ class ReportController
                 'Available slots' => $availableSlots,
                 'Total user' => $totalUser,
                 'Total membership' => $totalMember,
+                "Today's total collection" => $payments,
             ],
         ]);
     }

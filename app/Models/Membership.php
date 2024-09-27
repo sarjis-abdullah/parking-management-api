@@ -19,6 +19,7 @@ class Membership extends Model
         'offer_type',
         'discount_percentage',
         'discount_amount',
+        'active',
     ];
 
     public function membershipType(): BelongsTo

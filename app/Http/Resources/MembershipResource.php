@@ -16,6 +16,7 @@ class MembershipResource extends Resource
     {
         return [
             'id' => $this->id,
+            'active' => $this->active,
             'name' => $this->name,
             'contact_number' => $this->contact_number,
             'vehicle_id' => $this->vehicle_id,
