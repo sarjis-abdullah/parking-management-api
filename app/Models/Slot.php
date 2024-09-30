@@ -16,6 +16,7 @@ class Slot extends Model
         'floor_id',
         'place_id',
         'category_id',
+        'block_id',
         'identity',
         'remarks',
         'status',

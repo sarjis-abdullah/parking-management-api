@@ -15,6 +15,7 @@ class Floor extends Model
         'name',
         'level',
         'place_id',
+        'block_id',
         'remarks',
         'status',
         'created_by',
@@ -42,5 +43,10 @@ class Floor extends Model
         $query = $this->parking();
 
         return $query->count() > 0;
+    }
+
+    public function slotsOrderByBlockId(): HasMany
+    {
+        return $this->slots()->orderByDesc('block_id');
     }
 }

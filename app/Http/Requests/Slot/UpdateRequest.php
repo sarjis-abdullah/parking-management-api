@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\Slot;
 
+use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class UpdateRequest extends Request
 {
     /**
      * Get the validation rules that apply to the request.
@@ -14,7 +15,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+//            'block_id' => 'required|integer',
+            'name' => 'required|string',
         ];
     }
 }
