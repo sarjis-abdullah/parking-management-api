@@ -9,6 +9,7 @@ use App\Models\Membership;
 use App\Models\MembershipType;
 use App\Models\Parking;
 use App\Models\ParkingRate;
+use App\Models\Payment;
 use App\Models\Place;
 use App\Models\Slot;
 use App\Models\Tariff;
@@ -21,6 +22,7 @@ use App\Repositories\Contracts\MembershipInterface;
 use App\Repositories\Contracts\MembershipTypeInterface;
 use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\ParkingRateInterface;
+use App\Repositories\Contracts\PaymentInterface;
 use App\Repositories\Contracts\PlaceInterface;
 use App\Repositories\Contracts\SlotInterface;
 use App\Repositories\Contracts\TariffInterface;
@@ -31,6 +33,7 @@ use App\Repositories\MembershipRepository;
 use App\Repositories\MembershipTypeRepository;
 use App\Repositories\ParkingRateRepository;
 use App\Repositories\ParkingRepository;
+use App\Repositories\PaymentRepository;
 use App\Repositories\PlaceRepository;
 use App\Repositories\SlotRepository;
 use App\Repositories\TariffRepository;
@@ -68,5 +71,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(VehicleInterface::class, fn() => new VehicleRepository(new Vehicle()));
         $this->app->bind(MembershipInterface::class, fn() => new MembershipRepository(new Membership()));
         $this->app->bind(MembershipTypeInterface::class, fn() => new MembershipTypeRepository(new MembershipType()));
+        $this->app->bind(PaymentInterface::class, fn() => new PaymentRepository(new Payment()));
     }
 }

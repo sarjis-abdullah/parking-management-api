@@ -178,6 +178,12 @@ class ParkingController
      */
     public function handleCheckout(CheckoutRequest $request, Parking $parking)
     {
+//        return [
+//            'data' => [
+//                'redirect_url' => env('CLIENT_URL').'/success?transaction_id=6709f2c85bd18'
+//            ]
+//        ];
+//        return $request->all();
         return $this->interface->handleCheckout($parking, $request->all());
         return new ParkingResource($list);
     }

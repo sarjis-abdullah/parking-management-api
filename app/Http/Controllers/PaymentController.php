@@ -2,17 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
+use App\Http\Requests\Payment\IndexRequest;
 use App\Http\Requests\Payment\UpdateRequest;
 use App\Http\Resources\PaymentResource;
+use App\Http\Resources\PaymentResourceCollection;
 use App\Models\Payment;
+use App\Repositories\Contracts\PaymentInterface;
 use Illuminate\Http\Request;
 
 class PaymentController
 {
-    public function __construct()
+    private PaymentInterface $paymentInterface;
+
+    public function __construct(PaymentInterface $paymentInterface)
     {
+        $this->paymentInterface = $paymentInterface;
+    }
+
+    function index(IndexRequest $request)
+    {
+        $list = $this->paymentInterface->findBy($request->all());
+        return new PaymentResourceCollection($list);
     }
 
     /**

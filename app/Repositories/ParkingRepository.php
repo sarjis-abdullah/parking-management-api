@@ -218,8 +218,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             $payment_type = 'partial';
         }
         $payment = Payment::create([
-            'method' => PaymentMethod::cash,
-//            'method' => $data['payment']['method'],
+            'method' => $data['payment']['method'],
             'paid_amount' => $data['payment']['paid_amount'],
             'payable_amount' => $data['payment']['payable_amount'],
             'discount_amount' => $data['payment']['discount_amount'],
@@ -229,12 +228,31 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,
             'transaction_id' => uniqid(),
+            'status' => PaymentStatus::pending->value,
         ]);
         $vehicle->update([
             'status' => ParkingStatus::checked_out->value,
         ]);
 
         $item = parent::update($model, $data);
+
+//        throw new CustomValidationException('The vehicle is already checked-out.', 422, [
+//            'payment' => $payment,
+//            'method' => PaymentMethod::cash->value,
+//            'status' => PaymentStatus::pending->value,
+//        ]);
+
+        if ($payment->method == PaymentMethod::cash->value && $payment->status == PaymentStatus::pending->value){
+            $payment->update([
+                'status'        => PaymentStatus::success,
+            ]);
+            DB::commit();
+            return [
+                'data' => [
+                    'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$payment->transaction_id
+                ]
+            ];
+        }
 
         DB::commit();
 

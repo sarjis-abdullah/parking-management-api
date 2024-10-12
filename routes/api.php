@@ -177,6 +177,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::get('slot', [\App\Http\Controllers\SlotController::class, 'index']);
             Route::get('tariff', [\App\Http\Controllers\TariffController::class, 'index']);
             Route::put('payment/{payment}', [\App\Http\Controllers\PaymentController::class, 'update']);
+            Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
         });
 
         Route::middleware(
