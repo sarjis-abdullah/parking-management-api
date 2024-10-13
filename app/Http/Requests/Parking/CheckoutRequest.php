@@ -19,9 +19,9 @@ class CheckoutRequest extends Request
             'duration' => 'required|integer',
             'payment' => 'required',
             'payment.method' => 'required|string',
-            'payment.paid_amount' => 'required|numeric',
-            'payment.payable_amount' => 'required|numeric',
-            'payment.discount_amount' => 'required|numeric',
+            'payment.paid_amount' => 'required|numeric|min:0',
+            'payment.payable_amount' => 'required|numeric|min:0',
+            'payment.discount_amount' => 'required|numeric|min:0',
         ];
     }
 }

@@ -180,29 +180,29 @@ class SslCommerzPaymentController
                     continue;
                 }
             }
-            return redirect(env('CLIENT_URL').'/success');
+            return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
         }
         else{
             $payment = $queryBuilder->first();
 
             $status = $payment->status;
-
+            
             if ($payment->status == $pending) {
                 $payment->update([
                     'status' => PaymentStatus::success,
                     'method' => PaymentMethod::ssl_commerz
                 ]);
-                return redirect(env('CLIENT_URL').'/success');
+                return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             } else if ($payment->status == $success && $payment->payment_type == 'partial'){
                 $payment->update([
                     'paid_amount' => $payment->payable_amount,
                     'due_amount' => 0,
                     'payment_type' => 'full',
                 ]);
-                return redirect(env('CLIENT_URL').'/success');
+                return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             }
             else if ($status == $success || $status == $complete) {
-                return redirect(env('CLIENT_URL').'/success');
+                return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             } else {
                 return redirect(env('CLIENT_URL').'/failed');
             }
@@ -221,7 +221,7 @@ class SslCommerzPaymentController
             $payment->update(['status' => PaymentStatus::failed]);
             return redirect(env('CLIENT_URL').'/failed');
         } else if ($status == $success || $status == $complete) {
-            return redirect(env('CLIENT_URL').'/success');
+            return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
         } else {
             return redirect(env('CLIENT_URL').'/failed');
         }
@@ -240,7 +240,7 @@ class SslCommerzPaymentController
             $payment->update(['status' => PaymentStatus::canceled]);
             return redirect(env('CLIENT_URL').'/cancel');
         } else if ($status == $success || $status == $complete) {
-            return redirect(env('CLIENT_URL').'/success');
+            return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
         } else {
             return redirect(env('CLIENT_URL').'/failed');
         }

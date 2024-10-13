@@ -15,6 +15,7 @@ class PaymentResource extends Resource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'method' => $this->method,
             'payable_amount' => $this->payable_amount,
             'discount_amount' => $this->discount_amount,
