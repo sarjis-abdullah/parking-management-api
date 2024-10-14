@@ -15,11 +15,11 @@ class PayAllDueRequest extends Request
     public function rules(): array
     {
         return [
-            'payment_type' => 'required|in:partial',
-            'vehicle_id' => 'required',
-            'status' => 'sometimes|required',
-            'start_date' => 'sometimes|required',
-            'end_date' => 'sometimes|required',
+            'paymentIds' => 'required|array',
+//            'vehicle_id' => 'required',
+//            'status' => 'sometimes|required',
+//            'start_date' => 'sometimes|required',
+//            'end_date' => 'sometimes|required',
         ];
     }
 }

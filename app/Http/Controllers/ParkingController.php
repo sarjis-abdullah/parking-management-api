@@ -99,33 +99,36 @@ class ParkingController
         ]);
     }
 
-    function payAllDue(PayAllDueRequest $request): \Illuminate\Http\JsonResponse
+    function payAllDue(PayAllDueRequest $request)
     {
+        $paymentIds = $request->paymentIds;
 
-        $queryBuilder = Payment::query();
+        $selectedPayments = Payment::whereIn('id' , $paymentIds)->get();
 
-        $queryBuilder = $queryBuilder->where('vehicle_id' , $request->vehicle_id)
-            ->where('payment_type', '=', $request['payment_type']);
+        $transactionId = uniqid();
 
-        if (isset($request['end_date'])) {
-            $queryBuilder  =  $queryBuilder->whereDate('created_at', '<=', Carbon::parse($request['end_date']));
+        Payment::whereIn('id', $paymentIds)->update([
+            'transaction_id' => $transactionId,
+        ]);
+
+        $totalPayableForSelectedTransaction = 0;
+
+        // Assuming you have a collection of payments
+        foreach ($selectedPayments as $payment) {
+            if ($payment->status == 'success' && $payment->payment_type == "partial") {
+                // Add total payable when status is not success
+                $totalPayableForSelectedTransaction += floatval($payment->due_amount);
+                continue; // Move to the next payment in the loop
+            }elseif ($payment->status != 'success') {
+                // Add total due when payment type is not full
+                $totalPayableForSelectedTransaction += floatval($payment->payable_amount);
+            }
         }
 
-        if (isset($request['start_date'])) {
-            $queryBuilder =  $queryBuilder->whereDate('created_at', '>=', Carbon::parse($request['start_date']));
-        }
-        if (isset($request['status'])) {
-            $queryBuilder =  $queryBuilder->where('status', '=', $request['status']);
-        }
-
-        $totalDueAmount = $queryBuilder->sum('due_amount');
-
-        $updatedTransactionId = uniqid(); // The new transaction ID you want to update
-        $queryBuilder->update(['transaction_id' => $updatedTransactionId]);
 
         $paymentData = [
-            'amount' => $totalDueAmount,
-            'transaction_id' => $updatedTransactionId,
+            'amount' => $totalPayableForSelectedTransaction,
+            'transaction_id' => $transactionId,
         ];
 
         return response()->json([

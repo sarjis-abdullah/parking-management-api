@@ -158,27 +158,13 @@ class SslCommerzPaymentController
 
         if ($payments->count() > 1) {
             foreach ($payments as $payment) {
-                $status = $payment->status;
-                if ($payment->status == $pending) {
-                    $payment->update([
-                        'status'        => PaymentStatus::success,
-                        'method'        => PaymentMethod::ssl_commerz,
-                        'paid_amount'   => $payment->payable_amount,
-                    ]);
-                    continue;
-                } else if ($payment->status == $success && $payment->payment_type == 'partial'){
-                    $payment->update([
-                        'paid_amount'   => $payment->payable_amount,
-                        'due_amount'    => 0,
-                        'payment_type'  => 'full',
-                    ]);
-                    continue;
-                }
-                else if ($status == $success || $status == $complete) {
-                    continue;
-                } else {
-                    continue;
-                }
+                $payment->update([
+                    'status'        => PaymentStatus::success,
+                    'method'        => PaymentMethod::ssl_commerz,
+                    'paid_amount'   => $payment->payable_amount,
+                    'due_amount'    => 0,
+                    'payment_type'  => 'full',
+                ]);
             }
             return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
         }
@@ -186,7 +172,7 @@ class SslCommerzPaymentController
             $payment = $queryBuilder->first();
 
             $status = $payment->status;
-            
+
             if ($payment->status == $pending) {
                 $payment->update([
                     'status' => PaymentStatus::success,
