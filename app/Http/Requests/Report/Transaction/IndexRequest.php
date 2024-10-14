@@ -22,6 +22,7 @@ class IndexRequest extends Request
             'vehicle_id' => 'sometimes|required|exists:vehicles,id',
             'payment_type' => 'sometimes|in:full,partial',
             'status' => ['sometimes', Rule::enum(PaymentStatus::class)],
+            'method' => ['sometimes', Rule::in(['cash', 'ssl_commerz', 'due'])],
         ];
     }
 }

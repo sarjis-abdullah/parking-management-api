@@ -18,7 +18,7 @@ class StoreRequest extends Request
         return [
             'name' => 'nullable|string',
             'vehicle_id' => 'integer|exists:vehicles,id|unique:memberships,vehicle_id',
-            'contact_number' => 'required|string|unique:memberships,contact_number',
+            'contact_number' => 'required|unique:memberships,contact_number',
         ];
     }
 

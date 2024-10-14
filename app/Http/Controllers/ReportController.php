@@ -36,6 +36,9 @@ class ReportController
         if (isset($request['status'])) {
             $queryBuilder =  $queryBuilder->where('status', '=', $request['status']);
         }
+        if (isset($request['method'])) {
+            $queryBuilder =  $queryBuilder->where('method', '=', $request['method']);
+        }
 
         $dateWiseTransactions = $queryBuilder->select(
             DB::raw('DATE(created_at) as transaction_date'),
