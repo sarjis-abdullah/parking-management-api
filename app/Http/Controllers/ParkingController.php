@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Http\Requests\Parking\CheckoutRequest;
 use App\Http\Requests\Parking\IndexRequest;
@@ -15,6 +16,7 @@ use App\Models\Payment;
 use App\Repositories\Contracts\ParkingInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ParkingController
 {
@@ -101,6 +103,8 @@ class ParkingController
 
     function payAllDue(PayAllDueRequest $request)
     {
+        DB::beginTransaction();
+
         $paymentIds = $request->paymentIds;
 
         $selectedPayments = Payment::whereIn('id' , $paymentIds)->get();
@@ -125,12 +129,29 @@ class ParkingController
             }
         }
 
+        Payment::whereIn('id', $paymentIds)->update([
+            'paid_now' => $totalPayableForSelectedTransaction,
+        ]);
 
         $paymentData = [
             'amount' => $totalPayableForSelectedTransaction,
             'transaction_id' => $transactionId,
         ];
 
+        if ($request->paymentMethod == PaymentMethod::cash->value){
+            Payment::whereIn('id', $paymentIds)->update([
+                'status' => PaymentStatus::success,
+            ]);
+
+            DB::commit();
+
+            return [
+                'data' => [
+                    'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success',
+                ]
+            ];
+        }
+        DB::commit();
         return response()->json([
             'data' => [
                 'redirect_url' => $this->interface->payBySslCommerz($paymentData)

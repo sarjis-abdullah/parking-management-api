@@ -53,10 +53,11 @@ class ReportController
             'paid_by_vehicle_id',
             'discount_amount',
             'payment_type',
+            'paid_now',
             'id',
         )
             ->with('vehicle')
-            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id') // Group by all selected fields except for the aggregate fields
+            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id', 'paid_now') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
         $limit = !empty($request['per_page']) ? (int)$request['per_page'] : 50; // it's needed for pagination

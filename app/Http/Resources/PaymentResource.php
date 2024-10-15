@@ -17,6 +17,7 @@ class PaymentResource extends Resource
         return [
             'id' => $this->id,
             'method' => $this->method,
+            'paid_now' => $this->paid_now,
             'payable_amount' => $this->payable_amount,
             'discount_amount' => $this->discount_amount,
             'paid_amount' => $this->paid_amount,

@@ -166,7 +166,7 @@ class SslCommerzPaymentController
                     'payment_type'  => 'full',
                 ]);
             }
-            return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
+            return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success');
         }
         else{
             $payment = $queryBuilder->first();
