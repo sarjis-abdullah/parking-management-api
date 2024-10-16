@@ -17,6 +17,7 @@ class IndexRequest extends Request
     {
         return [
             'category_id' => 'integer',
+            'block_id' => 'integer',
         ];
     }
 }
