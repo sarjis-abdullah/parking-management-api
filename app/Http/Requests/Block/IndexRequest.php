@@ -16,7 +16,7 @@ class IndexRequest extends Request
     public function rules(): array
     {
         return [
-            //
+            'floor_id' => 'required|integer',
         ];
     }
 }

@@ -25,6 +25,7 @@ class SlotResource extends Resource
             'floor'  => $this->needToInclude($request, 's.floor') ? new FloorResource($this->floor) : null,
             'category'  => $this->needToInclude($request, 's.category') ? new CategoryResource($this->category) : null,
             'place'  => $this->needToInclude($request, 's.place') ? new PlaceResource($this->place) : null,
+            'block'  => $this->needToInclude($request, 's.block') ? new BlockResource($this->block) : null,
             'updated_by'=> $this->id,
             'deleted_by'=> $this->id,
         ];

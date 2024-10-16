@@ -175,6 +175,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::get('floor', [\App\Http\Controllers\FloorController::class, 'index']);
             Route::get('category', [\App\Http\Controllers\CategoryController::class, 'index']);
             Route::get('slot', [\App\Http\Controllers\SlotController::class, 'index']);
+            Route::get('block', [\App\Http\Controllers\BlockController::class, 'index']);
             Route::get('tariff', [\App\Http\Controllers\TariffController::class, 'index']);
             Route::put('payment/{payment}', [\App\Http\Controllers\PaymentController::class, 'update']);
             Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
@@ -193,6 +194,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::apiResource('user', UserController::class);
             Route::apiResource('place', \App\Http\Controllers\PlaceController::class)->except('index');
             Route::apiResource('floor', \App\Http\Controllers\FloorController::class)->except('index');
+            Route::apiResource('block', \App\Http\Controllers\BlockController::class)->except('index');
             Route::apiResource('category', \App\Http\Controllers\CategoryController::class)->except('index');
             Route::apiResource('slot', \App\Http\Controllers\SlotController::class)->except('index');
             Route::apiResource('tariff', \App\Http\Controllers\TariffController::class)->except('index');

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 
+use App\Models\Block;
 use App\Models\Category;
 use App\Models\Floor;
 use App\Models\Membership;
@@ -15,7 +16,9 @@ use App\Models\Slot;
 use App\Models\Tariff;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Repositories\BlockRepository;
 use App\Repositories\CategoryRepository;
+use App\Repositories\Contracts\BlockInterface;
 use App\Repositories\Contracts\CategoryInterface;
 use App\Repositories\Contracts\FloorInterface;
 use App\Repositories\Contracts\MembershipInterface;
@@ -72,5 +75,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MembershipInterface::class, fn() => new MembershipRepository(new Membership()));
         $this->app->bind(MembershipTypeInterface::class, fn() => new MembershipTypeRepository(new MembershipType()));
         $this->app->bind(PaymentInterface::class, fn() => new PaymentRepository(new Payment()));
+        $this->app->bind(BlockInterface::class, fn() => new BlockRepository(new Block()));
     }
 }

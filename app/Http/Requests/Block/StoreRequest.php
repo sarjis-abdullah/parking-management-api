@@ -17,6 +17,7 @@ class StoreRequest extends Request
     {
         return [
             'name' => 'required|string|max:255',
+            'floor_id' => 'required|exists:floors,id',
         ];
     }
 }

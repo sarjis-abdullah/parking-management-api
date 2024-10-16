@@ -38,6 +38,10 @@ class Slot extends Model
     {
         return $this->belongsTo(Floor::class);
     }
+    public function block(): BelongsTo
+    {
+        return $this->belongsTo(Block::class);
+    }
 
     public function parking(): HasMany
     {

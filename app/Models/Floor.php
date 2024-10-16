@@ -15,7 +15,6 @@ class Floor extends Model
         'name',
         'level',
         'place_id',
-        'block_id',
         'remarks',
         'status',
         'created_by',
@@ -36,6 +35,10 @@ class Floor extends Model
     public function parking(): HasMany
     {
         return $this->hasMany(Parking::class);
+    }
+    public function blocks(): HasMany
+    {
+        return $this->hasMany(Block::class);
     }
 
     public function has_parking(): bool
