@@ -21,6 +21,7 @@ class IndexRequest extends Request
             'end_date' => 'date|date_format:Y-m-d',
             'vehicle_id' => 'sometimes|required|exists:vehicles,id',
             'payment_type' => 'sometimes|in:full,partial',
+            'category' => 'sometimes',
             'status' => ['sometimes', Rule::enum(PaymentStatus::class)],
             'method' => ['sometimes', Rule::in(['cash', 'ssl_commerz', 'due'])],
         ];

@@ -40,8 +40,17 @@ class ReportController
             $queryBuilder =  $queryBuilder->where('method', '=', $request['method']);
         }
 
+        if (isset($request['category'])){
+            $parkingQuery = Parking::query();
+            $parkingIds = $parkingQuery->whereHas('category', function($query) use ($request){
+                $query->where('id', '=', $request['category']);
+            })->pluck('id')->toArray();
+
+            $queryBuilder =  $queryBuilder->whereIn('parking_id', $parkingIds);
+        }
+
         $dateWiseTransactions = $queryBuilder->select(
-            DB::raw('DATE(created_at) as transaction_date'),
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d %h:%i %p") as transaction_date'),
             DB::raw('COUNT(id) as transaction_count'),
             DB::raw('SUM(payable_amount) as total_payable'),
             DB::raw('SUM(paid_amount) as total_paid'),
