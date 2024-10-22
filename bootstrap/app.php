@@ -30,6 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'DNS1D' => 'Milon\Barcode\Facades\DNS1DFacade',
             'DNS2D' => 'Milon\Barcode\Facades\DNS2DFacade',
+            'PDF' => Barryvdh\DomPDF\Facade\Pdf::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

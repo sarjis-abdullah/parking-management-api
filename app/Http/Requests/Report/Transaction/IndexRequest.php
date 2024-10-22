@@ -24,6 +24,7 @@ class IndexRequest extends Request
             'category' => 'sometimes',
             'status' => ['sometimes', Rule::enum(PaymentStatus::class)],
             'method' => ['sometimes', Rule::in(['cash', 'ssl_commerz', 'due'])],
+            'format' => ['sometimes', Rule::in(['json', 'pdf'])],
         ];
     }
 }

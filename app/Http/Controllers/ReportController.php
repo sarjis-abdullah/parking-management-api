@@ -10,9 +10,11 @@ use App\Models\Parking;
 use App\Models\Payment;
 use App\Models\Slot;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController
 {
@@ -74,8 +76,21 @@ class ReportController
         $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
         $queryBuilder->orderBy($orderBy, $orderDirection);
 
+        $allTransactions = $dateWiseTransactions->paginate($limit);
+        $pdfUrl = '';
+        if ($request->get('format') == 'pdf') {
+            $pdf = PDF::loadView('transactions', [
+                'transactions' => $allTransactions,
+            ]);
+            $filePath = 'transactions.pdf';
+
+            Storage::disk('public')->put($filePath, $pdf->stream('addendum.pdf'), 'public');
+
+            $pdfUrl = asset('storage/transactions.pdf');
+        }
         return response()->json([
             'data'=> $dateWiseTransactions->paginate($limit),
+            'pdfUrl'=> $pdfUrl,
         ]);
     }
 
