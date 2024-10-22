@@ -11,27 +11,25 @@ class MembershipTypeRepository extends EloquentBaseRepository implements Members
     public function save(array $data): \ArrayAccess
     {
         $oldTariff = MembershipType::where('default', true)->first();
-        if (!isset($data['default']) || !$data['default']){
-            if ($oldTariff == null){
-                $data['default'] = true;
-            }
-        }else {
-            if ($oldTariff instanceof MembershipType){
-                $oldTariff->default = false;
-                $oldTariff->save();
-            }
+
+        if ($data['default'] && $oldTariff instanceof MembershipType && $oldTariff->default) {
+            $oldTariff->default = false;
+            $oldTariff->save();
         }
+
         return parent::save($data);
     }
     public function update(\ArrayAccess $model, array $data): \ArrayAccess
     {
         $oldTariff = MembershipType::where('default', true)->first();
-        if (!isset($data['default']) || !$data['default']){
-            if ($oldTariff == null){
-                $data['default'] = true;
-            }
+
+        if ($oldTariff instanceof MembershipType && $model->id == $oldTariff->id && !$data['default']){
+            throw new CustomValidationException('At least one payment type must be set as default.', 422, [
+                'default' => "At least one membership type must be set as default.",
+            ]);
         }
-        elseif ($oldTariff instanceof MembershipType && $oldTariff->default){
+
+        if ($oldTariff instanceof MembershipType && $oldTariff->default){
             $oldTariff->default = false;
             $oldTariff->save();
         }

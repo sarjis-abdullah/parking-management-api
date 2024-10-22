@@ -15,6 +15,7 @@ class MembershipType extends Model
         'discount_type',
         'discount_amount',
         'default',
+        'allow_separate_discount',
     ];
 
     public function memberships(): \Illuminate\Database\Eloquent\Relations\HasMany

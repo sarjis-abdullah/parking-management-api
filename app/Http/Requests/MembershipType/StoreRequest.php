@@ -3,6 +3,7 @@
 namespace App\Http\Requests\MembershipType;
 
 use App\Http\Requests\Request;
+use App\Models\MembershipType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -20,7 +21,8 @@ class StoreRequest extends Request
             'name' => 'required|string|unique:membership_types,id',
             'discount_type' => ['required', Rule::in(['percentage', 'free', 'flat'])],
             'discount_amount' => ['required', 'numeric', 'min:0'],
-            'default' => ['nullable'],
+            'default' => ['required', 'boolean'],
+            'allow_separate_discount' => ['sometimes', 'boolean'],
         ];
     }
 }

@@ -18,9 +18,10 @@ class UpdateRequest extends Request
     {
         return [
             'name' => 'required|string|unique:membership_types,id',
-            'discount_type' => ['required', Rule::in(['percentage', 'free', 'flat'])],
-            'discount_amount' => ['required', 'numeric', 'min:0'],
+//            'discount_type' => ['required', Rule::in(['percentage', 'free', 'flat'])],
+//            'discount_amount' => ['required', 'numeric', 'min:0'],
             'default' => ['required', 'boolean'],
+//            'allow_separate_discount' => ['required', 'boolean'],
         ];
     }
 }
