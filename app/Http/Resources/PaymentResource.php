@@ -20,6 +20,7 @@ class PaymentResource extends Resource
             'paid_now' => $this->paid_now,
             'payable_amount' => $this->payable_amount,
             'discount_amount' => $this->discount_amount,
+            'membership_discount' => $this->membership_discount,
             'paid_amount' => $this->paid_amount,
             'due_amount' => $this->due_amount,
             'status' => $this->status,

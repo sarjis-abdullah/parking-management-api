@@ -4,6 +4,7 @@ namespace App\Providers;
 
 
 use App\Models\Block;
+use App\Models\CashFlow;
 use App\Models\Category;
 use App\Models\Discount;
 use App\Models\Floor;
@@ -18,8 +19,10 @@ use App\Models\Tariff;
 use App\Models\User;
 use App\Models\Vehicle;
 use App\Repositories\BlockRepository;
+use App\Repositories\CashFlowRepository;
 use App\Repositories\CategoryRepository;
 use App\Repositories\Contracts\BlockInterface;
+use App\Repositories\Contracts\CashFlowInterface;
 use App\Repositories\Contracts\CategoryInterface;
 use App\Repositories\Contracts\DiscountInterface;
 use App\Repositories\Contracts\FloorInterface;
@@ -80,5 +83,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PaymentInterface::class, fn() => new PaymentRepository(new Payment()));
         $this->app->bind(BlockInterface::class, fn() => new BlockRepository(new Block()));
         $this->app->bind(DiscountInterface::class, fn() => new DiscountRepository(new Discount()));
+        $this->app->bind(CashFlowInterface::class, fn() => new CashFlowRepository(new CashFlow()));
     }
 }

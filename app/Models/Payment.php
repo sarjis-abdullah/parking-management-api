@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,6 +15,7 @@ class Payment extends Model
         'method',
         'payable_amount',
         'discount_amount',
+        'membership_discount',
         'paid_amount',
         'due_amount',
         'status',
@@ -23,7 +25,17 @@ class Payment extends Model
         'transaction_id',
         'payment_type',
         'paid_now',
+        'date',
     ];
+
+    protected static function booted()
+    {
+        static::updating(function ($payment) {
+            if ($payment->isDirty('status') && $payment->status === PaymentStatus::success->value) {
+                $payment->date = now(); // Set date to today
+            }
+        });
+    }
 
     function vehicle(): BelongsTo
     {

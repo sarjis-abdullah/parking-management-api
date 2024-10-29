@@ -24,6 +24,7 @@ Route::get('/install', function (Request $request) {
 
     Artisan::call('migrate:fresh', array('--force' => true));
     Artisan::call('db:seed');
+    Artisan::call('storage:link');
 
 //    if ($user == null)
 //    {
@@ -169,6 +170,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::apiResource('vehicle', \App\Http\Controllers\VehicleController::class);
             Route::apiResource('parking', \App\Http\Controllers\ParkingController::class)->except('index');
             Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
+            Route::apiResource('cash-flow', \App\Http\Controllers\CashFlowController::class);
 
 
             Route::get('place', [\App\Http\Controllers\PlaceController::class, 'index']);
@@ -180,6 +182,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::put('payment/{payment}', [\App\Http\Controllers\PaymentController::class, 'update']);
             Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
             Route::get('discount', [\App\Http\Controllers\DiscountController::class, 'index']);
+            Route::get('close-cash', [\App\Http\Controllers\CashFlowController::class, 'endDay']);
         });
 
         Route::middleware(

@@ -22,6 +22,7 @@ class CheckoutRequest extends Request
             'payment.paid_amount' => 'required|numeric|min:0',
             'payment.payable_amount' => 'required|numeric|min:0',
             'payment.discount_amount' => 'required|numeric|min:0',
+            'payment.membership_discount' => 'required|numeric|min:0',
         ];
     }
 }
