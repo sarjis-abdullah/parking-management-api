@@ -41,6 +41,17 @@ class ReportController
         if (isset($request['method'])) {
             $queryBuilder =  $queryBuilder->where('method', '=', $request['method']);
         }
+        if (isset($request['discount_filter']) && $request['discount_filter'] == 'no_discount') {
+            $queryBuilder =  $queryBuilder->where('membership_discount', '=', 0)
+                ->where('discount_amount', '=', 0);
+        }else {
+            if (isset($request['discount_filter']) && $request['discount_filter'] == 'membership_discount') {
+                $queryBuilder =  $queryBuilder->where('membership_discount', '!=', 0);
+            }
+            if (isset($request['discount_filter']) && $request['discount_filter'] == 'other_discount') {
+                $queryBuilder =  $queryBuilder->where('discount_amount', '!=', 0);
+            }
+        }
 
         if (isset($request['category'])){
             $parkingQuery = Parking::query();
@@ -63,12 +74,13 @@ class ReportController
             'parking_id',
             'paid_by_vehicle_id',
             'discount_amount',
+            'membership_discount',
             'payment_type',
             'paid_now',
             'id',
         )
             ->with('vehicle')
-            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id', 'paid_now') // Group by all selected fields except for the aggregate fields
+            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id', 'paid_now', 'membership_discount') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
         $limit = !empty($request['per_page']) ? (int)$request['per_page'] : 50; // it's needed for pagination

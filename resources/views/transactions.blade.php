@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Date-wise Report PDF</title>
 </head>
-<body style="font-family: Arial, sans-serif; margin: 20px;">
+<style>
+    @font-face {
+        font-family: 'Noto Sans Bengali';
+        src: url('{{ storage_path('fonts/NotoSansBengali-VariableFont_wdth,wght.ttf') }}') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    body {
+        font-family: 'Noto Sans Bengali', sans-serif;
+    }
+</style>
+<body style="font-family:'Noto Sans Bengali', sans-serif; margin: 20px;">
 <h1 style="text-align: center;">Date-wise Report</h1>
 
-<h2 style="text-align: center; margin-top: 20px;">Date-wise Transactions</h2>
 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
     <thead>
     <tr>
@@ -32,10 +42,19 @@
                 </td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->vehicle?->number}}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->transaction_date}}</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->total_payable}}</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->total_paid}}</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->discount_amount}}</td>
-                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->total_due}}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{'৳ '.$item->total_payable}}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{'৳ '.$item->total_paid}}</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+                    <div style="display: flex; flex-direction: column; align-items: end">
+                        @if($item->membership_discount)
+                        <div>{{'৳ '.$item->membership_discount}}</div>
+                        @endif
+                        @if($item->discount_amount)
+                        <div>{{'৳ '.$item->discount_amount}}</div>
+                        @endif
+                    </div>
+                </td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{'৳ '.$item->total_due}}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->payment_type}}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->status}}</td>
                 <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">{{$item->method}}</td>
