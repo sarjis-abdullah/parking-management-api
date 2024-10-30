@@ -28,15 +28,6 @@ class Payment extends Model
         'date',
     ];
 
-    protected static function booted()
-    {
-        static::updating(function ($payment) {
-            if ($payment->isDirty('status') && $payment->status === PaymentStatus::success->value) {
-                $payment->date = now(); // Set date to today
-            }
-        });
-    }
-
     function vehicle(): BelongsTo
     {
         return $this->belongsTo(Vehicle::class, 'paid_by_vehicle_id');

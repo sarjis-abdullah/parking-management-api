@@ -135,7 +135,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             $currentDate = Carbon::now();
             if ($currentDate->lessThan($tariff->start_date)) {
                 throw new CustomValidationException('The name field must be an array.', 422, [
-                    'tariff_id' => ['The tariff is not active yet.'],
+                    'tariff_id' => ['The default tariff is not started yet. This is set for future date.'],
                 ]);
             }
         }
@@ -222,6 +222,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'paid_amount' => $data['payment']['paid_amount'],
             'payable_amount' => $data['payment']['payable_amount'],
             'discount_amount' => $data['payment']['discount_amount'],
+            'membership_discount' => $data['payment']['membership_discount'],
             'due_amount' => $dueAmount,
             'payment_type' => $payment_type,
 //            'received_by' => auth()->id(),
@@ -244,7 +245,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         if ($payment->method == PaymentMethod::cash->value && $payment->status == PaymentStatus::pending->value){
             $payment->update([
-                'status'        => PaymentStatus::success,
+                'status'        => PaymentStatus::success->value,
+                'date'        => now(),
             ]);
             DB::commit();
             return [

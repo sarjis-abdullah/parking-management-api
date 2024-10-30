@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Exceptions\CustomValidationException;
 use App\Http\Requests\Parking\CheckoutRequest;
 use App\Http\Requests\Parking\IndexRequest;
 use App\Http\Requests\Parking\StoreRequest;
@@ -141,6 +142,7 @@ class ParkingController
         if ($request->paymentMethod == PaymentMethod::cash->value){
             Payment::whereIn('id', $paymentIds)->update([
                 'status' => PaymentStatus::success,
+                'date'   => now(),
             ]);
 
             DB::commit();
@@ -202,6 +204,9 @@ class ParkingController
      */
     public function handleCheckout(CheckoutRequest $request, Parking $parking)
     {
+//        throw new CustomValidationException('The name field must be an array.', 422, [
+//            'tariff_id' => $request->all(),
+//        ]);
 //        return [
 //            'data' => [
 //                'redirect_url' => env('CLIENT_URL').'/success?transaction_id=6709f2c85bd18'

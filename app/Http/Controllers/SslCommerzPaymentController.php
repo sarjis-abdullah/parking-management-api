@@ -164,6 +164,7 @@ class SslCommerzPaymentController
                     'paid_amount'   => $payment->payable_amount,
                     'due_amount'    => 0,
                     'payment_type'  => 'full',
+                    'date'          => now(),
                 ]);
             }
             return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success');
@@ -176,7 +177,8 @@ class SslCommerzPaymentController
             if ($payment->status == $pending) {
                 $payment->update([
                     'status' => PaymentStatus::success,
-                    'method' => PaymentMethod::ssl_commerz
+                    'method' => PaymentMethod::ssl_commerz,
+                    'date'   => now(),
                 ]);
                 return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             } else if ($payment->status == $success && $payment->payment_type == 'partial'){
@@ -184,6 +186,7 @@ class SslCommerzPaymentController
                     'paid_amount' => $payment->payable_amount,
                     'due_amount' => 0,
                     'payment_type' => 'full',
+                    'date'        => now(),
                 ]);
                 return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             }
