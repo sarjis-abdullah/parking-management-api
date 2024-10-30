@@ -19,9 +19,10 @@ class UserResource extends Resource
             'name' => $this->name,
             'email' => $this->email,
             'status' => $this->status,
-            'roles' => $this->when($this->needToInclude($request, 'user.roles'), function () {
-                return new RoleResourceCollection($this->roles);
-            }),
+            'roles' => new RoleResourceCollection($this->roles),
+//            'roles' => $this->when($this->needToInclude($request, 'user.roles'), function () {
+//                return new RoleResourceCollection($this->roles);
+//            }),
         ];
     }
 }
