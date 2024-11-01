@@ -41,6 +41,9 @@ class ReportController
         if (isset($request['method'])) {
             $queryBuilder =  $queryBuilder->where('method', '=', $request['method']);
         }
+        if (isset($request['transaction_id'])) {
+            $queryBuilder =  $queryBuilder->where('transaction_id', '=', $request['transaction_id']);
+        }
         if (isset($request['discount_filter']) && $request['discount_filter'] == 'no_discount') {
             $queryBuilder =  $queryBuilder->where('membership_discount', '=', 0)
                 ->where('discount_amount', '=', 0);
@@ -78,9 +81,10 @@ class ReportController
             'payment_type',
             'paid_now',
             'id',
+            'transaction_id',
         )
             ->with('vehicle')
-            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id', 'paid_now', 'membership_discount') // Group by all selected fields except for the aggregate fields
+            ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id', 'paid_now', 'membership_discount', 'transaction_id') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
         $limit = !empty($request['per_page']) ? (int)$request['per_page'] : 50; // it's needed for pagination

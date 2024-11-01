@@ -17,6 +17,7 @@ class IndexRequest extends Request
     public function rules(): array
     {
         return [
+            'transaction_id' => 'string',
             'start_date' => 'date|date_format:Y-m-d',
             'end_date' => 'date|date_format:Y-m-d',
             'vehicle_id' => 'sometimes|required|exists:vehicles,id',

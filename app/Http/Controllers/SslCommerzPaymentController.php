@@ -6,11 +6,19 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Library\SslCommerzNotification;
 use App\Models\Payment;
+use App\Repositories\Contracts\ParkingInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class SslCommerzPaymentController
 {
+    private ParkingInterface $parkingInterface;
+
+    public function __construct(ParkingInterface $parkingInterface)
+    {
+        $this->parkingInterface = $parkingInterface;
+    }
+
     public function exampleEasyCheckout()
     {
         return view('exampleEasycheckout');
@@ -152,21 +160,14 @@ class SslCommerzPaymentController
         $totalDueAmount = $queryBuilder->sum('due_amount');
 
         $payments = $queryBuilder->get();
+        $paymentIds = $queryBuilder->pluck('id');
         $success = PaymentStatus::success->value;
         $complete = PaymentStatus::complete->value;
         $pending = PaymentStatus::pending->value;
 
         if ($payments->count() > 1) {
-            foreach ($payments as $payment) {
-                $payment->update([
-                    'status'        => PaymentStatus::success,
-                    'method'        => PaymentMethod::ssl_commerz,
-                    'paid_amount'   => $payment->payable_amount,
-                    'due_amount'    => 0,
-                    'payment_type'  => 'full',
-                    'date'          => now(),
-                ]);
-            }
+            $totalPayableForSelectedTransaction = $this->parkingInterface->getAmountToPay($payments);
+            $this->parkingInterface->applyBatchPayment($paymentIds, $totalPayableForSelectedTransaction, PaymentMethod::ssl_commerz->value);
             return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success');
         }
         else{
@@ -197,6 +198,7 @@ class SslCommerzPaymentController
             }
         }
     }
+
 
     public function fail(Request $request, $transactionId)
     {

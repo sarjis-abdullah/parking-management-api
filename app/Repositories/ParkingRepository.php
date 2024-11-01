@@ -34,9 +34,11 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $queryBuilder = $this->model;
 
         if(isset($searchCriteria['query'])) {
-            $searchCriteria['id'] = $this->model->where('barcode', 'like', '%' . $searchCriteria['query'] . '%')
+            $searchCriteria['id'] = $queryBuilder->where('barcode', 'like', '%' . $searchCriteria['query'] . '%')
                 ->orWhereHas('vehicle', function ($query) use ($searchCriteria) {
                     $query->where('number', 'like', '%' . $searchCriteria['query'] . '%');
+                })->orWhereHas('payments', function ($query) use ($searchCriteria) {
+                    $query->where('transaction_id', '=', $searchCriteria['query']);
                 })
                 ->pluck('id')->toArray();
             unset($searchCriteria['query']);
@@ -210,11 +212,12 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         ]);
 
         $payable_amount = (double)$data['payment']['payable_amount'];
-        $dueAmount = 0;
         $paid_amount = (double)$data['payment']['paid_amount'];
+        $discount_amount = (double)$data['payment']['discount_amount'];
+        $membership_discount = (double)$data['payment']['membership_discount'];
         $payment_type = 'full';
-        if ($payable_amount != $paid_amount){
-            $dueAmount = $payable_amount - $paid_amount;
+        $dueAmount = $payable_amount - $paid_amount - $discount_amount - $membership_discount;
+        if ($dueAmount > 0){
             $payment_type = 'partial';
         }
         $payment = Payment::create([
@@ -236,12 +239,6 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         ]);
 
         $item = parent::update($model, $data);
-
-//        throw new CustomValidationException('The vehicle is already checked-out.', 422, [
-//            'payment' => $payment,
-//            'method' => PaymentMethod::cash->value,
-//            'status' => PaymentStatus::pending->value,
-//        ]);
 
         if ($payment->method == PaymentMethod::cash->value && $payment->status == PaymentStatus::pending->value){
             $payment->update([
@@ -272,6 +269,63 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         return $item;
     }
+
+    public function getAmountToPay($payments): float|int
+    {
+        $totalPayableForSelectedTransaction = 0;
+
+        // Assuming you have a collection of payments
+        foreach ($payments as $payment) {
+            if ($payment->status == 'success' && $payment->payment_type == "partial") {
+                // Add total payable when status is not success
+                $totalPayableForSelectedTransaction += floatval($payment->due_amount);
+                continue; // Move to the next payment in the loop
+            }elseif ($payment->status != 'success') {
+                $amountToPay = floatval($payment->payable_amount) - floatval($payment->discount_amount) - floatval($payment->membership_discount);
+                $totalPayableForSelectedTransaction += $amountToPay;
+            }
+        }
+        return $totalPayableForSelectedTransaction;
+    }
+
+    public function applyBatchPayment($paymentIds, $amountToApply, $method)
+    {
+        DB::transaction(function () use ($paymentIds, $amountToApply, $method) {
+            $payments = Payment::whereIn('id', $paymentIds)
+                ->orderBy('id') // Or any other ordering required
+                ->get();
+
+
+            foreach ($payments as $payment) {
+                if ($amountToApply <= 0) {
+                    throw new CustomValidationException('The name field must be an array.', 422, [
+                        'error' => 'Not enough amount',
+                    ]);
+                }
+                $amountForThisRow = 0;
+                if ($payment->status == 'success' && $payment->payment_type == "partial") {
+                    $amountForThisRow = floatval($payment->due_amount);
+                    $payment->paid_amount += $amountForThisRow;
+                    $payment->due_amount -= $amountForThisRow;
+                }elseif ($payment->status != 'success') {
+                    $amountForThisRow = floatval($payment->payable_amount) - floatval($payment->discount_amount) - floatval($payment->membership_discount);
+                    $payment->paid_amount = $amountForThisRow;
+                    $payment->due_amount = 0;
+                }
+
+                $payment->status = $payment->due_amount == 0 ? PaymentStatus::success->value : $payment->status;
+                $payment->payment_type = $payment->due_amount == 0 ? 'full' : $payment->payment_type;
+                $payment->method = $method;
+                $payment->date = now();
+
+                $payment->save();
+
+                // Subtract the applied amount from the total amount
+                $amountToApply -= $amountForThisRow;
+            }
+        });
+    }
+
 
     function repay(Request $request)
     {

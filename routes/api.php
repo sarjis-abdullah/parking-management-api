@@ -145,7 +145,7 @@ Route::group(['prefix' => 'api/v1'], function () {
         Route::get('/scan/repay/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'repay'])->name('scan.repay');
         Route::get('/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue'])->name('payDue');
         Route::get('/scan/pay-due/{paymentId}', [\App\Http\Controllers\ParkingController::class, 'payDue'])->name('scan.payDue');
-        Route::post('/pay-all-due', [\App\Http\Controllers\ParkingController::class, 'payAllDue'])->name('pay-all-due');
+        Route::get('/pay-all', [\App\Http\Controllers\ParkingController::class, 'payAll'])->name('pay-all');
 //        Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
 
         Route::post('/success/{transactionId}', [SslCommerzPaymentController::class, 'success']);
@@ -157,7 +157,10 @@ Route::group(['prefix' => 'api/v1'], function () {
 
 
     });
+    Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
     Route::get('parking', [\App\Http\Controllers\ParkingController::class, 'index']);
+    Route::get('discount', [\App\Http\Controllers\DiscountController::class, 'index']);
+
     Route::put('parking-check-out/{parking}', [\App\Http\Controllers\ParkingController::class, 'handleCheckout']);
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
     Route::post('/register', [UserController::class, 'register'])->name('user.register');
@@ -180,8 +183,7 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::get('block', [\App\Http\Controllers\BlockController::class, 'index']);
             Route::get('tariff', [\App\Http\Controllers\TariffController::class, 'index']);
             Route::put('payment/{payment}', [\App\Http\Controllers\PaymentController::class, 'update']);
-            Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
-            Route::get('discount', [\App\Http\Controllers\DiscountController::class, 'index']);
+
             Route::get('close-cash', [\App\Http\Controllers\CashFlowController::class, 'endDay']);
         });
 

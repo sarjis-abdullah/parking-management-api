@@ -55,6 +55,9 @@ class ParkingController
 
     function repay(Request $request, $paymentId)
     {
+        throw new CustomValidationException('The name field must be an array.', 422, [
+            'tariff_id' => $request->all(),
+        ]);
         $payment = Payment::find($paymentId);
 
         $amount = $payment->payable_amount;;
@@ -79,6 +82,9 @@ class ParkingController
     }
     function payDue(Request $request, $paymentId)
     {
+        throw new CustomValidationException('The name field must be an array.', 422, [
+            'tariff_id' => $request->all(),
+        ]);
         $payment = Payment::find($paymentId);
 
         $amount = $payment->due_amount;
@@ -102,68 +108,80 @@ class ParkingController
         ]);
     }
 
-    function payAllDue(PayAllDueRequest $request)
+    /**
+     * @throws \Exception
+     */
+    function payAll(PayAllDueRequest $request)
     {
-        DB::beginTransaction();
+//        throw new CustomValidationException('The name field must be an array.', 422, [
+//            'tariff_id' => $request->all(),
+//        ]);
+        try {
+            DB::beginTransaction();
 
-        $paymentIds = $request->paymentIds;
+            $paymentIds = array_map('intval', $request->input('paymentIds')); // Explicit integer casting
 
-        $selectedPayments = Payment::whereIn('id' , $paymentIds)->get();
 
-        $transactionId = uniqid();
+            $selectedPayments = Payment::whereIn('id' , $paymentIds)->get();
 
-        Payment::whereIn('id', $paymentIds)->update([
-            'transaction_id' => $transactionId,
-        ]);
 
-        $totalPayableForSelectedTransaction = 0;
+            $transactionId = uniqid();
 
-        // Assuming you have a collection of payments
-        foreach ($selectedPayments as $payment) {
-            if ($payment->status == 'success' && $payment->payment_type == "partial") {
-                // Add total payable when status is not success
-                $totalPayableForSelectedTransaction += floatval($payment->due_amount);
-                continue; // Move to the next payment in the loop
-            }elseif ($payment->status != 'success') {
-                // Add total due when payment type is not full
-                $totalPayableForSelectedTransaction += floatval($payment->payable_amount);
-            }
-        }
-
-        Payment::whereIn('id', $paymentIds)->update([
-            'paid_now' => $totalPayableForSelectedTransaction,
-        ]);
-
-        $paymentData = [
-            'amount' => $totalPayableForSelectedTransaction,
-            'transaction_id' => $transactionId,
-        ];
-
-        if ($request->paymentMethod == PaymentMethod::cash->value){
             Payment::whereIn('id', $paymentIds)->update([
-                'status' => PaymentStatus::success,
-                'date'   => now(),
+                'transaction_id' => $transactionId,
             ]);
 
-            DB::commit();
+            $totalPayableForSelectedTransaction = $this->interface->getAmountToPay($selectedPayments);
 
-            return [
-                'data' => [
-                    'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success',
-                ]
+            if ($totalPayableForSelectedTransaction == 0){
+                    throw new CustomValidationException('The name field must be an array.', 422, [
+                        'tariff_id' => 'There is not payable amountt',
+                    ]);
+            }
+
+            Payment::whereIn('id', $paymentIds)->update([
+                'paid_now' => $totalPayableForSelectedTransaction,
+            ]);
+
+            $paymentData = [
+                'amount' => $totalPayableForSelectedTransaction,
+                'transaction_id' => $transactionId,
             ];
+            if ($request->query('paymentMethod') == PaymentMethod::cash->value){
+                $this->interface->applyBatchPayment($paymentIds, $totalPayableForSelectedTransaction, $request->query('paymentMethod'));
+                DB::commit();
+
+                return [
+                    'data' => [
+                        'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success',
+                    ]
+                ];
+            }
+            DB::commit();
+            if ($request->process == 'app'){
+                return response()->json([
+                    'data' => [
+                        'redirect_url' => $this->interface->payBySslCommerz($paymentData)
+                    ]
+                ]);
+            }
+
+            return redirect($this->interface->payBySslCommerz($paymentData));
+
+        } catch (\Exception $e) {
+            DB::rollBack(); // Roll back the transaction if there's an error
+
+            throw $e;
+            // Optionally, log the exception or handle it in other ways
         }
-        DB::commit();
-        return response()->json([
-            'data' => [
-                'redirect_url' => $this->interface->payBySslCommerz($paymentData)
-            ]
-        ]);
+
     }
 
     function repayAll(Request $request): \Illuminate\Http\JsonResponse
     {
-
+        throw new CustomValidationException('The name field must be an array.', 422, [
+            'tariff_id' => $request->all(),
+        ]);
         $queryBuilder = Payment::query();
 
         if (isset($request['end_date'])) {
