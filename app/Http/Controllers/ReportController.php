@@ -95,9 +95,13 @@ class ReportController
         $allTransactions = $dateWiseTransactions->paginate($limit);
         $pdfUrl = '';
         if ($request->get('format') == 'pdf') {
-            $pdf = PDF::loadView('transactions', [
-                'transactions' => $allTransactions,
-            ]);
+
+            $data = ['transactions' => $allTransactions, 'totals' => $this->prepareTotals($allTransactions)];
+            if ($request->get('load') == 'view'){
+                return view('transactions', $data);
+            }
+
+            $pdf = PDF::loadView('transactions', $data);
             $filePath = 'transactions.pdf';
 
             Storage::disk('public')->put($filePath, $pdf->stream('addendum.pdf'), 'public');
@@ -108,6 +112,31 @@ class ReportController
             'data'=> $dateWiseTransactions->paginate($limit),
             'pdfUrl'=> $pdfUrl,
         ]);
+    }
+
+    function prepareTotals($transactions)
+    {
+        $acc = [
+            'payable' => 0,
+            'paid' => 0,
+            // 'pending_payment' => 0,
+            'discount' => 0,
+            'due' => 0,
+        ];
+
+        if ($transactions && count($transactions)) {
+            foreach ($transactions as $payment) {
+                if ($payment['status'] === 'success') {
+                    $acc['paid'] += (float) $payment['total_paid'];
+                }
+                $acc['payable'] += (float) $payment['total_payable'];
+                $acc['due'] += (float) $payment['total_due'];
+                $acc['discount'] += (float) $payment['discount_amount'];
+                $acc['discount'] += (float) $payment['membership_discount'];
+            }
+        }
+
+        return $acc;
     }
 
     function getVehicleReport(VehicleIndexRequest $request)

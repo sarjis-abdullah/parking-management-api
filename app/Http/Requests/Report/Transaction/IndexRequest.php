@@ -26,6 +26,7 @@ class IndexRequest extends Request
             'status' => ['sometimes', Rule::enum(PaymentStatus::class)],
             'method' => ['sometimes', Rule::in(['cash', 'ssl_commerz', 'due'])],
             'format' => ['sometimes', Rule::in(['json', 'pdf'])],
+            'load' => ['sometimes', Rule::in(['view'])],
             'discount_filter' => ['sometimes', Rule::in(['all', 'no_discount', 'membership_discount', 'other_discount'])],
         ];
     }

@@ -124,6 +124,8 @@ Route::group(['prefix' => 'web/v1'], function () {
     Route::post('/pay', [SslCommerzPaymentController::class, 'pay']);
     Route::post('/pay-via-ajax', [SslCommerzPaymentController::class, 'payViaAjax']);
 
+
+
 //    Route::post('/success', [SslCommerzPaymentController::class, 'success']);
 //    Route::post('/fail', [SslCommerzPaymentController::class, 'fail']);
 //    Route::post('/cancel', [SslCommerzPaymentController::class, 'cancel']);
@@ -134,6 +136,7 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::get('/', function (Request $request) {
         return response()->json(['message' => 'Hello API']);
     });
+    Route::get('/transaction2', [\App\Http\Controllers\ReportController::class, 'getTransactionReport'])->name('transaction.report');
 
     Route::group(['prefix' => 'payment'], function () {
         // SSLCOMMERZ Start

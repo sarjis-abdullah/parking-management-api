@@ -14,11 +14,23 @@
     }
     body {
         font-family: 'Noto Sans Bengali', sans-serif;
+        margin: auto;
+        max-width: 1200px;
     }
 </style>
-<body style="font-family:'Noto Sans Bengali', sans-serif; margin: 20px;">
-<h1 style="text-align: center;">Transaction Report</h1>
+<body style="font-family:'Noto Sans Bengali', sans-serif;">
+<h1 style="text-align: center;">Transaction Reports</h1>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+    <tbody>
 
+        <tr>
+            @foreach ($totals as $key => $value)
+            <td style="border: 1px solid #ddd; font-size:12px; text-align: center; text-transform: capitalize;">{{$key}} : {{$value}}</td>
+            @endforeach
+        </tr>
+
+    </tbody>
+</table>
 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
     <thead>
     <tr>
