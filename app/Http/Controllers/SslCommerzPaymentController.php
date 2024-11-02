@@ -155,6 +155,7 @@ class SslCommerzPaymentController
 
     public function success(Request $request, $transactionId): string
     {
+
         $queryBuilder = Payment::query();
         $queryBuilder = $queryBuilder->where('transaction_id', $transactionId);
         $totalPayableAmount = $queryBuilder->sum('payable_amount');
@@ -192,7 +193,8 @@ class SslCommerzPaymentController
                 ]);
                 return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             } else if ($payment->status == $success && $payment->payment_type == 'partial'){
-                dd('SSl controller success');
+
+                $due_amount = floatval($payment->due_amount);
                 $amountForThisRow = floatval($payment->payable_amount) - floatval($payment->discount_amount) - floatval($payment->membership_discount);
                 $payment->update([
                     'paid_amount' => $amountForThisRow,
@@ -204,7 +206,7 @@ class SslCommerzPaymentController
                     'payment_id' => $payment->id,
                     'status' => $payment->status,
                     'method' => $payment->method,
-                    'amount' => $payment->paid_amount,
+                    'amount' => $due_amount,
                     'date' => now(),
                 ]);
                 return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);

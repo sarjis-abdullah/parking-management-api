@@ -204,7 +204,9 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     public function handleCheckout(\ArrayAccess $model, array $data)
     {
         DB::beginTransaction();
-
+//        throw new CustomValidationException('Error.', 422, [
+//            'error' => 'We dont accept over amount',
+//        ]);
         $vehicle = Vehicle::find($model->vehicle_id);
         $this->checkVehicleCheckedOutToThrowError($vehicle);
 
@@ -221,6 +223,27 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         if ($dueAmount > 0){
             $payment_type = 'partial';
         }
+
+        $finalTotalAmount = $payable_amount - $discount_amount - $membership_discount;
+        if ($finalTotalAmount < 0) {
+            throw new CustomValidationException('Error.', 422, [
+                'error' => 'Subtotal cannot be less than zero.',
+            ]);
+        }
+
+        $parkingFee = $payable_amount;
+        $amount = $paid_amount + $discount_amount + $membership_discount;
+        if ($amount > $parkingFee) {
+           throw new CustomValidationException('Error', 422, [
+               'error' => 'Sum of receiving amount and discount cannot be greater than Parking fees.',
+           ]);
+        }
+        if ($dueAmount < 0) {
+            throw new CustomValidationException('Error.', 422, [
+                'error' => 'Due amount cannot be less than zero.',
+            ]);
+        }
+        
         $status = $paid_amount == 0 ? PaymentStatus::unpaid->value : PaymentStatus::pending->value;
         $method = $paid_amount == 0 ? PaymentMethod::none->value : $data['payment']['method'];
         $payment = Payment::create([

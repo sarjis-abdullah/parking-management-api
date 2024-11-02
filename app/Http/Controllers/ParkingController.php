@@ -165,7 +165,6 @@ class ParkingController
                     ]
                 ]);
             }
-
             return redirect($this->interface->payBySslCommerz($paymentData));
 
         } catch (\Exception $e) {
