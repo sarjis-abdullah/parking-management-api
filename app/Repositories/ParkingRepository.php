@@ -243,7 +243,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                 'error' => 'Due amount cannot be less than zero.',
             ]);
         }
-        
+
         $status = $paid_amount == 0 ? PaymentStatus::unpaid->value : PaymentStatus::pending->value;
         $method = $paid_amount == 0 ? PaymentMethod::none->value : $data['payment']['method'];
         $payment = Payment::create([
@@ -362,9 +362,16 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                     'date' => now(),
                 ]);
 
+                $oldStatus = $payment->status;
                 $payment->status = $status;
                 $payment->payment_type = $payment->due_amount == 0 ? 'full' : $payment->payment_type;
-                $payment->method = $method;
+
+                if ($payment->method != $method && $oldStatus == PaymentStatus::success->value){
+                    $payment->method = PaymentMethod::mixed->value;
+                }else {
+                    $payment->method = $method;
+                }
+
                 $payment->date = now();
 
                 $payment->save();

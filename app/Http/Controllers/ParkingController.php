@@ -148,7 +148,7 @@ class ParkingController
                 'transaction_id' => $transactionId,
             ];
             if ($request->query('paymentMethod') == PaymentMethod::cash->value){
-                $this->interface->applyBatchPayment($paymentIds, $totalPayableForSelectedTransaction, $request->query('paymentMethod'));
+                $this->interface->applyBatchPayment($paymentIds, $totalPayableForSelectedTransaction, PaymentMethod::cash->value);
                 DB::commit();
 
                 return [
