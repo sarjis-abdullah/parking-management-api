@@ -6,6 +6,7 @@ use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
 use App\Library\SslCommerzNotification;
 use App\Models\Payment;
+use App\Models\PaymentLog;
 use App\Repositories\Contracts\ParkingInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -166,6 +167,7 @@ class SslCommerzPaymentController
         $pending = PaymentStatus::pending->value;
 
         if ($payments->count() > 1) {
+            // when multiple not successful payment try to complete
             $totalPayableForSelectedTransaction = $this->parkingInterface->getAmountToPay($payments);
             $this->parkingInterface->applyBatchPayment($paymentIds, $totalPayableForSelectedTransaction, PaymentMethod::ssl_commerz->value);
             return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success');
@@ -181,13 +183,29 @@ class SslCommerzPaymentController
                     'method' => PaymentMethod::ssl_commerz,
                     'date'   => now(),
                 ]);
+                PaymentLog::create([
+                    'payment_id' => $payment->id,
+                    'status' => $payment->status,
+                    'method' => $payment->method,
+                    'amount' => $payment->paid_amount,
+                    'date' => now(),
+                ]);
                 return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             } else if ($payment->status == $success && $payment->payment_type == 'partial'){
+                dd('SSl controller success');
+                $amountForThisRow = floatval($payment->payable_amount) - floatval($payment->discount_amount) - floatval($payment->membership_discount);
                 $payment->update([
-                    'paid_amount' => $payment->payable_amount,
+                    'paid_amount' => $amountForThisRow,
                     'due_amount' => 0,
                     'payment_type' => 'full',
                     'date'        => now(),
+                ]);
+                PaymentLog::create([
+                    'payment_id' => $payment->id,
+                    'status' => $payment->status,
+                    'method' => $payment->method,
+                    'amount' => $payment->paid_amount,
+                    'date' => now(),
                 ]);
                 return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
             }
@@ -210,6 +228,13 @@ class SslCommerzPaymentController
 
         if ($payment->status == $pending) {
             $payment->update(['status' => PaymentStatus::failed]);
+            PaymentLog::create([
+                'payment_id' => $payment->id,
+                'status' => $payment->status,
+                'method' => $payment->method,
+                'amount' => $payment->paid_amount,
+                'date' => now(),
+            ]);
             return redirect(env('CLIENT_URL').'/failed');
         } else if ($status == $success || $status == $complete) {
             return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);
@@ -229,6 +254,13 @@ class SslCommerzPaymentController
         $status = $payment->status;
         if ($status == $pending) {
             $payment->update(['status' => PaymentStatus::canceled]);
+            PaymentLog::create([
+                'payment_id' => $payment->id,
+                'status' => $payment->status,
+                'method' => $payment->method,
+                'amount' => $payment->paid_amount,
+                'date' => now(),
+            ]);
             return redirect(env('CLIENT_URL').'/cancel');
         } else if ($status == $success || $status == $complete) {
             return redirect(env('CLIENT_URL').'/success?transaction_id='.$transactionId);

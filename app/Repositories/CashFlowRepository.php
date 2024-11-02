@@ -7,6 +7,7 @@ use App\Enums\PaymentStatus;
 use App\Exceptions\CustomValidationException;
 use App\Models\CashFlow;
 use App\Models\Payment;
+use App\Models\PaymentLog;
 use App\Repositories\Contracts\CashFlowInterface;
 use App\Repositories\Contracts\UserInterface;
 
@@ -62,10 +63,10 @@ class CashFlowRepository extends EloquentBaseRepository implements CashFlowInter
             ]);
         }
 
-        $totalIncome = Payment::where('method', PaymentMethod::cash->value)
+        $totalIncome = PaymentLog::where('method', PaymentMethod::cash->value)
             ->where('status', PaymentStatus::success->value)
             ->whereDate('date', now()->toDateString())
-            ->sum('paid_amount');
+            ->sum('amount');
 
         // Calculate ending cash
         $endingCash = $cashFlow->starting_cash + $totalIncome;

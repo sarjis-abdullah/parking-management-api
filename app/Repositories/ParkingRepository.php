@@ -12,6 +12,7 @@ use App\Library\SslCommerzNotification;
 use App\Models\Membership;
 use App\Models\MembershipType;
 use App\Models\Payment;
+use App\Models\PaymentLog;
 use App\Models\Slot;
 use App\Models\Tariff;
 use App\Models\Vehicle;
@@ -220,8 +221,10 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         if ($dueAmount > 0){
             $payment_type = 'partial';
         }
+        $status = $paid_amount == 0 ? PaymentStatus::unpaid->value : PaymentStatus::pending->value;
+        $method = $paid_amount == 0 ? PaymentMethod::none->value : $data['payment']['method'];
         $payment = Payment::create([
-            'method' => $data['payment']['method'],
+            'method' => $method,
             'paid_amount' => $data['payment']['paid_amount'],
             'payable_amount' => $data['payment']['payable_amount'],
             'discount_amount' => $data['payment']['discount_amount'],
@@ -232,8 +235,17 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model->vehicle_id,
             'transaction_id' => uniqid(),
-            'status' => PaymentStatus::pending->value,
+            'status' => $status,
         ]);
+
+        PaymentLog::create([
+            'payment_id' => $payment->id,
+            'status' => $payment->status,
+            'method' => $payment->method,
+            'amount' => $payment->paid_amount,
+            'date' => now(),
+        ]);
+
         $vehicle->update([
             'status' => ParkingStatus::checked_out->value,
         ]);
@@ -245,6 +257,15 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                 'status'        => PaymentStatus::success->value,
                 'date'        => now(),
             ]);
+
+            PaymentLog::create([
+                'payment_id' => $payment->id,
+                'status' => $payment->status,
+                'method' => $payment->method,
+                'amount' => $payment->paid_amount,
+                'date' => now(),
+            ]);
+
             DB::commit();
             return [
                 'data' => [
@@ -277,9 +298,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         // Assuming you have a collection of payments
         foreach ($payments as $payment) {
             if ($payment->status == 'success' && $payment->payment_type == "partial") {
-                // Add total payable when status is not success
                 $totalPayableForSelectedTransaction += floatval($payment->due_amount);
-                continue; // Move to the next payment in the loop
             }elseif ($payment->status != 'success') {
                 $amountToPay = floatval($payment->payable_amount) - floatval($payment->discount_amount) - floatval($payment->membership_discount);
                 $totalPayableForSelectedTransaction += $amountToPay;
@@ -292,9 +311,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     {
         DB::transaction(function () use ($paymentIds, $amountToApply, $method) {
             $payments = Payment::whereIn('id', $paymentIds)
-                ->orderBy('id') // Or any other ordering required
+                ->orderBy('id')
                 ->get();
-
 
             foreach ($payments as $payment) {
                 if ($amountToApply <= 0) {
@@ -312,8 +330,16 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                     $payment->paid_amount = $amountForThisRow;
                     $payment->due_amount = 0;
                 }
+                $status = $payment->due_amount == 0 ? PaymentStatus::success->value : $payment->status;
+                PaymentLog::create([
+                    'payment_id' => $payment->id,
+                    'status' => $status,
+                    'method' => $method,
+                    'amount' => $amountForThisRow,
+                    'date' => now(),
+                ]);
 
-                $payment->status = $payment->due_amount == 0 ? PaymentStatus::success->value : $payment->status;
+                $payment->status = $status;
                 $payment->payment_type = $payment->due_amount == 0 ? 'full' : $payment->payment_type;
                 $payment->method = $method;
                 $payment->date = now();
