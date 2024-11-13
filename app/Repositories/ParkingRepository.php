@@ -9,6 +9,7 @@ use App\Enums\SlotStatus;
 use App\Exceptions\CustomException;
 use App\Exceptions\CustomValidationException;
 use App\Library\SslCommerzNotification;
+use App\Models\Discount;
 use App\Models\Membership;
 use App\Models\MembershipType;
 use App\Models\Payment;
@@ -24,6 +25,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ParkingRepository extends EloquentBaseRepository implements ParkingInterface
 {
@@ -241,6 +243,13 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         if ($dueAmount < 0) {
             throw new CustomValidationException('Error.', 422, [
                 'error' => 'Due amount cannot be less than zero.',
+            ]);
+        }
+
+        if (isset($data['payment']['discount_id'])){
+            $id = $data['payment']['discount_id'];
+            Discount::find($id)->update([
+                'promo_code' => Str::random(4),
             ]);
         }
 

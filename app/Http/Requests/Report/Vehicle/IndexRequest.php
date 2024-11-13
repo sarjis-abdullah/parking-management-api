@@ -4,6 +4,7 @@ namespace App\Http\Requests\Report\Vehicle;
 
 use App\Http\Requests\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class IndexRequest extends Request
 {
@@ -18,6 +19,8 @@ class IndexRequest extends Request
             'start_date' => 'date|date_format:Y-m-d',
             'end_date' => 'date|date_format:Y-m-d',
             'vehicle_id' => 'sometimes|required|exists:vehicles,id',
+            'format' => ['sometimes', Rule::in(['json', 'pdf'])],
+            'load' => ['sometimes', Rule::in(['view'])],
         ];
     }
 }

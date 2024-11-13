@@ -10,9 +10,46 @@ use App\Models\Payment;
 use App\Models\PaymentLog;
 use App\Repositories\Contracts\CashFlowInterface;
 use App\Repositories\Contracts\UserInterface;
+use Carbon\Carbon;
 
 class CashFlowRepository extends EloquentBaseRepository implements CashFlowInterface
 {
+    /*
+    * @inheritdoc
+    */
+    public function findBy(array $searchCriteria = [], $withTrashed = false)
+    {
+        $queryBuilder = $this->model;
+
+        if (isset($searchCriteria['end_date'])) {
+            $queryBuilder = $queryBuilder->whereDate('date', '<=', Carbon::parse($searchCriteria['end_date']));
+            unset($searchCriteria['end_date']);
+        }
+
+        if (isset($searchCriteria['start_date'])) {
+            $queryBuilder = $queryBuilder->whereDate('date', '>=', Carbon::parse($searchCriteria['start_date']));
+            unset($searchCriteria['start_date']);
+        }
+
+        $queryBuilder = $queryBuilder->where(function ($query) use ($searchCriteria) {
+            $this->applySearchCriteriaInQueryBuilder($query, $searchCriteria);
+        });
+
+        $limit = !empty($searchCriteria['per_page']) ? (int)$searchCriteria['per_page'] : 15;
+        $orderBy = !empty($searchCriteria['order_by']) ? $searchCriteria['order_by'] : 'id';
+        $orderDirection = !empty($searchCriteria['order_direction']) ? $searchCriteria['order_direction'] : 'desc';
+        $queryBuilder->orderBy($orderBy, $orderDirection);
+
+        if ($withTrashed) {
+            $queryBuilder->withTrashed();
+        }
+
+        if (empty($searchCriteria['withoutPagination'])) {
+            return $queryBuilder->paginate($limit);
+        } else {
+            return $queryBuilder->get();
+        }
+    }
     /**
      * @throws CustomValidationException
      */

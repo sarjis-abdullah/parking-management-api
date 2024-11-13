@@ -165,8 +165,27 @@ class ReportController
 
         $limit = !empty($request['per_page']) ? (int) $request['per_page'] : 50;
 
+//        return response()->json([
+//            'data' => $dateWiseVehicleEntries->paginate($limit),  // Paginate the results
+//        ]);
+
+        $allData = $dateWiseVehicleEntries->paginate($limit);
+        $pdfUrl = '';
+
+        if ($request->get('format') == 'pdf') {
+
+            $data = ['items' => $allData];
+
+            $pdf = PDF::loadView('vehicle-reports', $data);
+            $filePath = 'vehicle-reports.pdf';
+
+            Storage::disk('public')->put($filePath, $pdf->stream('addendum.pdf'), 'public');
+
+            $pdfUrl = asset('storage/vehicle-reports.pdf');
+        }
         return response()->json([
-            'data' => $dateWiseVehicleEntries->paginate($limit),  // Paginate the results
+            'data'=> $allData,
+            'pdfUrl'=> $pdfUrl,
         ]);
     }
 
@@ -174,28 +193,32 @@ class ReportController
     {
         $detailedEntries = Parking::query()
             ->select(
-//                'place_id',
-//                'category_id',
-//                'slot_id',
-//                'floor_id',
-//                'tariff_id',
                 'vehicle_id',
-//                'barcode',
                 'in_time',
                 'out_time',
-//                'duration',
-//                'created_by',
-//                'updated_by',
-//                'deleted_by'
             )
             ->with('vehicle')
             ->whereDate('in_time', '=', Carbon::parse($request->entry_date)) // Get records for the selected date
-            ->whereNotNull('in_time')
-            ->get();
+            ->whereNotNull('in_time');
 
+        $allData = $detailedEntries->get();
+        $pdfUrl = '';
+
+        if ($request->get('format') == 'pdf') {
+
+            $data = ['items' => $allData];
+
+            $pdf = PDF::loadView('date-wise-vehicle-reports', $data);
+            $filePath = 'date-wise-vehicle-reports.pdf';
+
+            Storage::disk('public')->put($filePath, $pdf->stream('addendum.pdf'), 'public');
+
+            $pdfUrl = asset('storage/date-wise-vehicle-reports.pdf');
+        }
         return response()->json([
             'data' => [
-                'details' => $detailedEntries  // Detailed vehicle entries for the clicked date
+                'pdfUrl'=> $pdfUrl,
+                'details' => $allData  // Detailed vehicle entries for the clicked date
             ]  // Detailed vehicle entries for the clicked date
         ]);
     }

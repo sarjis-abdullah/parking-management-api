@@ -16,7 +16,8 @@ class IndexRequest extends Request
     public function rules(): array
     {
         return [
-            //
+            'start_date' => 'date|date_format:Y-m-d',
+            'end_date' => 'date|date_format:Y-m-d',
         ];
     }
 }

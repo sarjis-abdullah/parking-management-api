@@ -23,57 +23,57 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,
             UserSeeder::class,
-            MembershipTypesSeeder::class
+//            MembershipTypesSeeder::class
         ]);
 
-        Place::create([
-            'name' => 'Shyamoli'
-        ]);
-
-        Category::create([
-            'name' => 'Bus'
-        ]);
-
-        Floor::create([
-            'name' => 'Bus',
-            'place_id' => 1,
-        ]);
-
-        Slot::create([
-            "name" => "Slot 2",
-            "place_id" => 1,
-            "floor_id" => 1
-        ]);
-
-        $mt = MembershipType::find(1);
-        $mt2 = MembershipType::find(2);
-        $mt3 = MembershipType::find(3);
-        $mt->update([
-            "name"=>"Corporate",
-            "discount_amount" => "10.00",
-            "discount_type"=>"percentage",
-            "default"=> true
-        ]);
-        $mt2->update([
-            "name"=>"Regular customer",
-            "discount_amount" => "10.00",
-            "discount_type"=>"flat",
-        ]);
-        $mt3->update([
-            "name"=>"Our stuff",
-            "discount_type"=>"free",
-        ]);
-
-        $tariff = Tariff::create([
-            'name' => 'Plan 1',
-            "default"=> true,
-            "type" => "half_hourly",
-        ]);
-
-        ParkingRate::create([
-            "rate" => 30,
-            "tariff_id" => 1,
-        ]);
+//        Place::create([
+//            'name' => 'Shyamoli'
+//        ]);
+//
+//        Category::create([
+//            'name' => 'Bus'
+//        ]);
+//
+//        Floor::create([
+//            'name' => 'Bus',
+//            'place_id' => 1,
+//        ]);
+//
+//        Slot::create([
+//            "name" => "Slot 2",
+//            "place_id" => 1,
+//            "floor_id" => 1
+//        ]);
+//
+//        $mt = MembershipType::find(1);
+//        $mt2 = MembershipType::find(2);
+//        $mt3 = MembershipType::find(3);
+//        $mt->update([
+//            "name"=>"Corporate",
+//            "discount_amount" => "10.00",
+//            "discount_type"=>"percentage",
+//            "default"=> true
+//        ]);
+//        $mt2->update([
+//            "name"=>"Regular customer",
+//            "discount_amount" => "10.00",
+//            "discount_type"=>"flat",
+//        ]);
+//        $mt3->update([
+//            "name"=>"Our stuff",
+//            "discount_type"=>"free",
+//        ]);
+//
+//        $tariff = Tariff::create([
+//            'name' => 'Plan 1',
+//            "default"=> true,
+//            "type" => "half_hourly",
+//        ]);
+//
+//        ParkingRate::create([
+//            "rate" => 30,
+//            "tariff_id" => 1,
+//        ]);
 
 //        {
 //            "name": "qeqe",
