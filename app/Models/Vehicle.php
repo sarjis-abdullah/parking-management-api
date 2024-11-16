@@ -18,6 +18,7 @@ class Vehicle extends Model
         'status',
         'category_id',
         'points',
+        'district_code',
     ];
 
     public function membership(): HasOne

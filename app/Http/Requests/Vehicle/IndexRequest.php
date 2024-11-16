@@ -16,7 +16,8 @@ class IndexRequest extends Request
     public function rules(): array
     {
         return [
-            'query' => 'string'
+            'query' => 'string',
+            'district_code' => 'string',
         ];
     }
 }

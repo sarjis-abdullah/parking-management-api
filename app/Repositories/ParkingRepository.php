@@ -81,6 +81,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
         $this->checkVehicleCheckedInToThrowError($oldVehicle);
 
         $vehicleData = [
+            'district_code' => $data['district_code'],
             'number' => $data['vehicle_no'],
             'driver_name' => $data['driver_name'] ?? null,
             'driver_mobile' => $data['driver_mobile'] ?? null,

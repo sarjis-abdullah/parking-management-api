@@ -16,6 +16,7 @@ class StoreRequest extends Request
     public function rules(): array
     {
         return [
+            'district_code' => 'required|string',
             'vehicle_no' => 'required|string',
             'driver_name' => 'nullable|string',
             'driver_mobile' => 'nullable|string',
