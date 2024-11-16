@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('blocks', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->foreignId('place_id')->constrained('places')->onDelete('cascade');
             $table->foreignId('floor_id')->constrained('floors');
             $table->timestamps();
         });

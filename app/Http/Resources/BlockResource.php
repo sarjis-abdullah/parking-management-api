@@ -17,6 +17,8 @@ class BlockResource extends Resource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'place_id' => $this->place_id,
+            'place'  => $this->needToInclude($request, 'b.place') ? new FloorResource($this->place) : null,
             'floor'  => $this->needToInclude($request, 'b.floor') ? new FloorResource($this->floor) : null,
             'slots'  => $this->needToInclude($request, 'b.slots') ? new FloorResource($this->slots) : null,
         ];

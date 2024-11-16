@@ -12,12 +12,16 @@ class Block extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'floor_id'
+        'name', 'floor_id', 'place_id'
     ];
 
     public function floor() : BelongsTo
     {
         return $this->belongsTo(Floor::class);
+    }
+    public function place() : BelongsTo
+    {
+        return $this->belongsTo(Place::class);
     }
 
     public function slots() : HasMany
