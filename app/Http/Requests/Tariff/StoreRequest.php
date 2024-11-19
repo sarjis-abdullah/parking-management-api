@@ -22,7 +22,7 @@ class StoreRequest extends Request
             'category_id' => 'nullable|integer|exists:categories,id',
             'start_date' => 'nullable|date',
             'payment_rates' => 'required|array',
-            'payment_rates.*.rate' => 'required|numeric|between:1,1000000',
+            'payment_rates.*.rate' => 'required|numeric|between:0,1000000',
             'type' => 'string',
             'end_date' => 'nullable|date|after:start_date',
         ];

@@ -231,15 +231,24 @@ class ReportController
         $totalMember = Membership::count();
         $payments = Payment::where('status', '=', PaymentStatus::success)->whereDate('created_at', Carbon::today())->sum('paid_amount');
 
-
+        $availableSlotsByCategory = Slot::select('category_id', DB::raw('count(*) as available_count'))
+            ->where('status', 'available')
+            ->with('category')
+            ->groupBy('category_id')
+            ->get();
         return response()->json([
             'data'=> [
+
                 'Total slots' => $bookedSlots + $availableSlots,
                 'Currently parking' => $bookedSlots,
-                'Available slots' => $availableSlots,
+
                 'Total user' => $totalUser,
                 'Total membership' => $totalMember,
                 "Today's total collection" => $payments,
+            ],
+            'availableSlotsByCategory' => $availableSlotsByCategory,
+            'slots' => [
+                'Available slots' => $availableSlots,
             ],
         ]);
     }
