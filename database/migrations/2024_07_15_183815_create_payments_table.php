@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('discount_amount', 8, 2)->default(0.00);
             $table->string('status')->default('pending');
             $table->foreignId( 'received_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId( 'paid_by_vehicle_id')->constrained('vehicles')->onDelete('cascade');
+            $table->unsignedBigInteger( 'paid_by_vehicle_id')->nullable();
             $table->foreignId( 'parking_id')->nullable()->constrained('parkings')->nullOnDelete();
             $table->string('transaction_id', 255)->nullable();
             $table->timestamps();

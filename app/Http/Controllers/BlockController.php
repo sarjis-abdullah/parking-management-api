@@ -74,8 +74,9 @@ class BlockController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Block $block)
     {
-        //
+        $block->delete();
+        return response()->json(null, 204);
     }
 }

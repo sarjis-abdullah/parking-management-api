@@ -60,11 +60,12 @@ class TariffRepository extends EloquentBaseRepository implements TariffInterface
             throw new CustomValidationException('The name field must be an array.', 422, [
                 'parking' => ["Can't be deleted, This is assigned as default."],
             ]);
-        } else if ($model->has_parking()){
-            throw new CustomValidationException('The name field must be an array.', 422, [
-                'parking' => ["Can't be deleted, This is belongs to parking calculation."],
-            ]);
         }
+//        else if ($model->has_parking()){
+//            throw new CustomValidationException('The name field must be an array.', 422, [
+//                'parking' => ["Can't be deleted, This is belongs to parking calculation."],
+//            ]);
+//        }
         return parent::delete($model);
     }
 }
