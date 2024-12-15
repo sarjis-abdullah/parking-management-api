@@ -4,8 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use DNS1D;
+//use DNS1D;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Milon\Barcode\DNS2D;
 
 
 class ParkingResource extends Resource
@@ -17,16 +18,13 @@ class ParkingResource extends Resource
      */
     public function toArray(Request $request): array
     {
-        $image = DNS1D::getBarcodePNG($this->barcode, 'C39', 1, 50);
-
-        $checkoutURL = url('http://localhost:3000/parking-checkout/' . $this->barcode);
-
-        // Generate the QR code
-//        $url = QrCode::format('png')->size(200)->generate($checkoutURL);
+        $hardcodedClientUrl = "https://parking-management-front.vercel.app";
+        $barcodeData = env('CLIENT_URL', $hardcodedClientUrl).'/parking-checkout/' . $this->barcode;
+        $barcode = new DNS2D();
+        $barcodeData = $barcode->getBarcodePNG($barcodeData, "QRCODE", 4, 4);
         return [
             'id' => $this->id,
-            'barcode_image' => $image,
-//            'checkoutURL' => $url,
+            'barcode_image' => $barcodeData,
             'place_id' => $this->place_id,
             'category_id' => $this->category_id,
             'vehicle_id' => $this->vehicle_id,
