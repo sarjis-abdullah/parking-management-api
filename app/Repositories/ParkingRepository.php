@@ -254,8 +254,15 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             ]);
         }
 
-        $status = $paid_amount == 0 ? PaymentStatus::unpaid->value : PaymentStatus::pending->value;
+        $status = $paid_amount == 0 ? PaymentStatus::unpaid->value : PaymentStatus::success->value;
         $method = $paid_amount == 0 ? PaymentMethod::none->value : $data['payment']['method'];
+        $txn_number = '';
+        if (isset($data['payment']['txn_number']))
+            $txn_number = $data['payment']['txn_number'];
+        $reference_number = '';
+        if (isset($data['payment']['reference_number']))
+            $reference_number = $data['payment']['reference_number'];
+
         $payment = Payment::create([
             'method' => $method,
             'paid_amount' => $data['payment']['paid_amount'],
@@ -266,9 +273,11 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             'payment_type' => $payment_type,
 //            'received_by' => auth()->id(),
             'parking_id' => $model->id,
-            'paid_by_vehicle_id' => $model->vehicle_id,
+            'paid_by_vehicle_id' => $model?->vehicle_id,
             'transaction_id' => uniqid(),
             'status' => $status,
+            'reference_number' => $reference_number,
+            'txn_number' => $txn_number,
         ]);
 
         PaymentLog::create([
@@ -285,6 +294,13 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 
         $item = parent::update($model, $data);
 
+        DB::commit();
+        return [
+            'data' => [
+                'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$payment->transaction_id
+            ]
+        ];
+        //todo
         if ($payment->method == PaymentMethod::cash->value && $payment->status == PaymentStatus::pending->value){
             $payment->update([
                 'status'        => PaymentStatus::success->value,
@@ -306,6 +322,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                 ]
             ];
         }
+        //todo
+
 
         DB::commit();
 

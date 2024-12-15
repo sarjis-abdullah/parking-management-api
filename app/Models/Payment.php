@@ -26,6 +26,8 @@ class Payment extends Model
         'payment_type',
         'paid_now',
         'date',
+        'reference_number',
+        'txn_number',
     ];
 
     function vehicle(): BelongsTo
