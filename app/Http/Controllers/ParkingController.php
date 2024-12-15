@@ -129,6 +129,8 @@ class ParkingController
 
             Payment::whereIn('id', $paymentIds)->update([
                 'transaction_id' => $transactionId,
+                'reference_number' => $request->query('reference_number') ?? '',
+                'txn_number' => $request->query('txn_number') ?? '',
             ]);
 
             $totalPayableForSelectedTransaction = $this->interface->getAmountToPay($selectedPayments);
@@ -143,6 +145,17 @@ class ParkingController
                 'paid_now' => $totalPayableForSelectedTransaction,
             ]);
 
+
+            $this->interface->applyBatchPayment($paymentIds, $totalPayableForSelectedTransaction, $request->query('paymentMethod'));
+            DB::commit();
+
+            return [
+                'data' => [
+                    'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$transactionId.'&batch_payment=success',
+                ]
+            ];
+
+            //todo
             $paymentData = [
                 'amount' => $totalPayableForSelectedTransaction,
                 'transaction_id' => $transactionId,

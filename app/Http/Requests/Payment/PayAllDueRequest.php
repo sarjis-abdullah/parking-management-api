@@ -22,8 +22,42 @@ class PayAllDueRequest extends Request
         return [
             'paymentIds' => 'required|array',
             'paymentIds.*' => 'integer|min:1',
-            'paymentMethod' => ['required', Rule::in(['cash', 'online'])],
+            'paymentMethod' => [
+                'required',
+                Rule::in([
+                    "cash",
+                    "bkash",
+                    "nagad",
+                    "rocket",
+                    "upay",
+                    "tap",
+                    "online",
+                    "others",
+                ])
+            ],
+            'txn_number' => '',
+            'reference_number' => '',
             'process' => ['sometimes', Rule::in(['app', 'scan'])],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        // Call the parent logic first
+        parent::withValidator($validator);
+
+        // Add custom validation logic
+        $validator->after(function ($validator) {
+            $method = $this->input('paymentMethod');
+            $txnNumber = $this->input('txn_number');
+            $referenceNumber = $this->input('reference_number');
+
+            if ($method !== 'cash' && !$txnNumber && !$referenceNumber) {
+                $validator->errors()->add(
+                    'txn_or_ref',
+                    'Either transaction number or reference number is required when payment method is not cash.'
+                );
+            }
+        });
     }
 }

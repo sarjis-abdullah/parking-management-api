@@ -254,8 +254,8 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
             ]);
         }
 
-        $status = $paid_amount == 0 ? PaymentStatus::unpaid->value : PaymentStatus::success->value;
-        $method = $paid_amount == 0 ? PaymentMethod::none->value : $data['payment']['method'];
+        $status = $paid_amount == 0 && $payable_amount != 0 ? PaymentStatus::unpaid->value : PaymentStatus::success->value;
+        $method = $paid_amount == 0 && $payable_amount != 0 ? PaymentMethod::none->value : $data['payment']['method'];
         $txn_number = '';
         if (isset($data['payment']['txn_number']))
             $txn_number = $data['payment']['txn_number'];
