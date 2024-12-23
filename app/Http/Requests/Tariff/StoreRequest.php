@@ -23,7 +23,7 @@ class StoreRequest extends Request
             'start_date' => 'nullable|date',
             'payment_rates' => 'required|array',
             'payment_rates.*.rate' => 'required|numeric|between:0,1000000',
-            'type' => 'string',
+            'type' => 'string|in:half_hourly,hourly',
             'end_date' => 'nullable|date|after:start_date',
         ];
     }

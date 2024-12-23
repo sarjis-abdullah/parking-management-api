@@ -21,6 +21,7 @@ class Tariff extends Model
         'created_by',
         'updated_by',
         'deleted_by',
+        'type',
     ];
 
     public function parking_rates(): HasMany

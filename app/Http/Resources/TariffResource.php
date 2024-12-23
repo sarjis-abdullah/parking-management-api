@@ -21,6 +21,8 @@ class TariffResource extends Resource
             'end_date' => $this->end_date,
             'status' => $this->status,
             'default' => $this->default,
+            'type' => $this->type,
+            'modifiedType' => $this->type == 'hourly' ? 'hour' : 'half hour',
             'total_active_parking_count' => $this->total_active_parking_count(),
             'parking_rates'  => $this->needToInclude($request, 't.parking_rates') ? new ParkingRateResourceCollection($this->parking_rates) : null,
         ];
