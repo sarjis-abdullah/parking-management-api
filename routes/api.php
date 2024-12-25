@@ -136,7 +136,6 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::get('/', function (Request $request) {
         return response()->json(['message' => 'Hello API']);
     });
-    Route::get('/transaction2', [\App\Http\Controllers\ReportController::class, 'getTransactionReport'])->name('transaction.report');
 
     Route::group(['prefix' => 'payment'], function () {
         // SSLCOMMERZ Start
@@ -160,11 +159,7 @@ Route::group(['prefix' => 'api/v1'], function () {
 
 
     });
-    Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
-    Route::get('parking', [\App\Http\Controllers\ParkingController::class, 'index']);
-    Route::get('discount', [\App\Http\Controllers\DiscountController::class, 'index']);
 
-    Route::put('parking-check-out/{parking}', [\App\Http\Controllers\ParkingController::class, 'handleCheckout']);
     Route::post('/login', [UserController::class, 'login'])->name('user.login');
     Route::post('/register', [UserController::class, 'register'])->name('user.register');
     Route::middleware(['auth:api'])->group(function () {
@@ -178,6 +173,12 @@ Route::group(['prefix' => 'api/v1'], function () {
             Route::apiResource('parking-rate', \App\Http\Controllers\ParkingRateController::class);
             Route::apiResource('cash-flow', \App\Http\Controllers\CashFlowController::class);
 
+            //belows are previously public route
+            Route::get('parking', [\App\Http\Controllers\ParkingController::class, 'index']);
+            Route::get('payment', [\App\Http\Controllers\PaymentController::class, 'index']);
+            Route::get('discount', [\App\Http\Controllers\DiscountController::class, 'index']);
+            Route::put('parking-check-out/{parking}', [\App\Http\Controllers\ParkingController::class, 'handleCheckout']);
+            //avobes are previously public route
 
             Route::get('place', [\App\Http\Controllers\PlaceController::class, 'index']);
             Route::get('floor', [\App\Http\Controllers\FloorController::class, 'index']);
