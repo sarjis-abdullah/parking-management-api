@@ -21,6 +21,7 @@ use App\Repositories\Contracts\InstrumentSupportedRepository;
 use App\Repositories\Contracts\ParkingInterface;
 use App\Repositories\Contracts\PlaceInterface;
 use App\Repositories\Contracts\UserInterface;
+use App\Traits\TransactionGenerator;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -29,6 +30,7 @@ use Illuminate\Support\Str;
 
 class ParkingRepository extends EloquentBaseRepository implements ParkingInterface
 {
+    use TransactionGenerator;
     /*
     * @inheritdoc
     */
@@ -274,7 +276,7 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
 //            'received_by' => auth()->id(),
             'parking_id' => $model->id,
             'paid_by_vehicle_id' => $model?->vehicle_id,
-            'transaction_id' => uniqid(),
+            'transaction_id' => $this->generateTransactionId(),
             'status' => $status,
             'reference_number' => $reference_number,
             'txn_number' => $txn_number,

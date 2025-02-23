@@ -15,12 +15,14 @@ use App\Http\Resources\ParkingResourceCollection;
 use App\Models\Parking;
 use App\Models\Payment;
 use App\Repositories\Contracts\ParkingInterface;
+use App\Traits\TransactionGenerator;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ParkingController
 {
+    use TransactionGenerator;
     private ParkingInterface $interface;
 
     public function __construct(ParkingInterface $interface)
@@ -125,7 +127,7 @@ class ParkingController
             $selectedPayments = Payment::whereIn('id' , $paymentIds)->get();
 
 
-            $transactionId = uniqid();
+            $transactionId = $this->generateTransactionId();
 
             Payment::whereIn('id', $paymentIds)->update([
                 'transaction_id' => $transactionId,
@@ -206,7 +208,7 @@ class ParkingController
 
         $totalDueAmount = $queryBuilder->sum('payable_amount');
 
-        $updatedTransactionId = uniqid(); // The new transaction ID you want to update
+        $updatedTransactionId = $this->generateTransactionId(); // The new transaction ID you want to update
         $queryBuilder->update(['transaction_id' => $updatedTransactionId]);
 
         $paymentData = [
