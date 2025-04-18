@@ -92,7 +92,13 @@ class ReportController
         $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
         $queryBuilder->orderBy($orderBy, $orderDirection);
 
-        $allTransactions = $dateWiseTransactions->paginate($limit);
+        if ($limit < 0){
+            $allTransactions = $dateWiseTransactions->get();
+        }
+
+        else
+            $allTransactions = $dateWiseTransactions->paginate($limit);
+
         $pdfUrl = '';
         if ($request->get('format') == 'pdf') {
 
@@ -108,8 +114,22 @@ class ReportController
 
             $pdfUrl = asset('storage/transactions.pdf');
         }
+        if ($limit < 0){
+            return response()->json([
+                'data'=> [
+                    'data' => $allTransactions,
+
+                    'last_page' => 1,
+                    'per_page' => $limit,
+                    'to' => null,
+                    'total' => count($allTransactions),
+                    'current_page' => 1,
+                ],
+                'pdfUrl'=> $pdfUrl,
+            ]);
+        }
         return response()->json([
-            'data'=> $dateWiseTransactions->paginate($limit),
+            'data'=> $allTransactions,
             'pdfUrl'=> $pdfUrl,
         ]);
     }
