@@ -83,7 +83,7 @@ class ReportController
             'id',
             'transaction_id',
         )
-            ->with('vehicle')
+            ->with(['vehicle', 'parking:id,in_time,out_time'])
             ->groupBy('transaction_date', 'method', 'status', 'received_by', 'parking_id', 'paid_by_vehicle_id', 'discount_amount', 'payment_type', 'id', 'paid_now', 'membership_discount', 'transaction_id') // Group by all selected fields except for the aggregate fields
             ->orderBy('transaction_date');
 
@@ -92,6 +92,9 @@ class ReportController
         $orderDirection = !empty($request['order_direction']) ? $request['order_direction'] : 'desc';
         $queryBuilder->orderBy($orderBy, $orderDirection);
 
+        if (isset($request['start_date']) && isset($request['end_date'])){
+            $limit = -1;
+        }
         if ($limit < 0){
             $allTransactions = $dateWiseTransactions->get();
         }

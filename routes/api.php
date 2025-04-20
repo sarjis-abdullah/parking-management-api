@@ -19,6 +19,19 @@ Route::get('/migrate', function (Request $request) {
 
     return 'Migration completed successfully.';
 });
+Route::get('/link-storage', function () {
+    try {
+        Artisan::call('storage:link');
+        return response()->json([
+            'message' => 'Symbolic link created successfully.',
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to create symbolic link.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+});
 Route::get('/install', function (Request $request) {
     $user = \App\Models\User::where('id', '!=', null)->first();
 
