@@ -61,9 +61,23 @@
                     @php
                         $in = Carbon::parse($item->parking->in_time);
                         $out = Carbon::parse($item->parking->out_time);
-                        $duration = $in->diff($out)->format('%h hours %i minutes'); // you can change the format as needed
+
+                        $diffInMinutes = $in->diffInMinutes($out);
+                        $diffInHours = $in->diffInHours($out);
+                        $diffInDays = $in->diffInDays($out);
+
+                        if ($diffInMinutes < 60) {
+                            $duration = $diffInMinutes . ' m';
+                        } elseif ($diffInHours < 24) {
+                            $duration = $diffInHours . ' h';
+                        } else {
+                            $duration = $diffInDays . ' d';
+                        }
                     @endphp
+                    {{$duration}}
                 </td>
+                @else
+                    <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">N/A</td>
                 @endif
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">{{'৳ '.$item->total_payable}}</td>
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">{{'৳ '.$item->total_paid}}</td>
