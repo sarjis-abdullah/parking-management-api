@@ -15,7 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\File;
 class ReportController
 {
     function getTransactionReport(TransactionIndexRequest $request)
@@ -114,6 +114,14 @@ class ReportController
             $filePath = 'transactions.pdf';
 
             Storage::disk('public')->put($filePath, $pdf->stream('addendum.pdf'), 'public');
+
+            // Copy to public/storage so it's publicly accessible
+            $source = storage_path('app/public/' . $filePath);
+            $destination = public_path('storage/' . $filePath);
+
+            if (File::exists($source)) {
+                File::copy($source, $destination);
+            }
 
             $pdfUrl = asset('storage/transactions.pdf');
         }
