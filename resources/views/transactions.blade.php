@@ -1,3 +1,4 @@
+@php use Carbon\Carbon; @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +38,7 @@
         <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">SL No.</th>
         <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">Vehicle</th>
         <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">Date</th>
+        <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">Duration</th>
         <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">Payable</th>
         <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">Paid</th>
         <th style="border: 1px solid #ddd; font-size:12px; text-align: center; background-color: #f2f2f2;">Discount</th>
@@ -54,6 +56,15 @@
                 </td>
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">{{$item->vehicle?->number}}</td>
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">{{$item->transaction_date}}</td>
+                @if(isset($item?->parking->in_time) && isset($item?->parking->out_time))
+                <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">
+                    @php
+                        $in = Carbon::parse($item->parking->in_time);
+                        $out = Carbon::parse($item->parking->out_time);
+                        $duration = $in->diff($out)->format('%h hours %i minutes'); // you can change the format as needed
+                    @endphp
+                </td>
+                @endif
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">{{'৳ '.$item->total_payable}}</td>
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">{{'৳ '.$item->total_paid}}</td>
                 <td style="border: 1px solid #ddd; font-size:12px; text-align: center;">
