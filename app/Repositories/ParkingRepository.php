@@ -208,105 +208,78 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
      */
     public function handleCheckout(\ArrayAccess $model, array $data)
     {
-        DB::beginTransaction();
-//        throw new CustomValidationException('Error.', 422, [
-//            'error' => 'We dont accept over amount',
-//        ]);
-        $vehicle = Vehicle::find($model->vehicle_id);
-        $this->checkVehicleCheckedOutToThrowError($vehicle);
+        try {
+            DB::beginTransaction();
 
-        Slot::find($model->slot_id)->update([
-            'status' => SlotStatus::available->value
-        ]);
+            $vehicle = Vehicle::find($model->vehicle_id);
 
-        $payable_amount = (double)$data['payment']['payable_amount'];
-        $paid_amount = (double)$data['payment']['paid_amount'];
-        $discount_amount = (double)$data['payment']['discount_amount'];
-        $membership_discount = (double)$data['payment']['membership_discount'];
-        $payment_type = 'full';
-        $dueAmount = $payable_amount - $paid_amount - $discount_amount - $membership_discount;
-        if ($dueAmount > 0){
-            $payment_type = 'partial';
-        }
+            $this->checkVehicleCheckedOutToThrowError($vehicle);
 
-        $finalTotalAmount = $payable_amount - $discount_amount - $membership_discount;
-        if ($finalTotalAmount < 0) {
-            throw new CustomValidationException('Error.', 422, [
-                'error' => 'Subtotal cannot be less than zero.',
+            Slot::find($model->slot_id)->update([
+                'status' => SlotStatus::available->value
             ]);
-        }
 
-        $parkingFee = $payable_amount;
-        $amount = $paid_amount + $discount_amount + $membership_discount;
-        if ($amount > $parkingFee) {
-           throw new CustomValidationException('Error', 422, [
-               'error' => 'Sum of receiving amount and discount cannot be greater than Parking fees.',
-           ]);
-        }
-        if ($dueAmount < 0) {
-            throw new CustomValidationException('Error.', 422, [
-                'error' => 'Due amount cannot be less than zero.',
-            ]);
-        }
+            $payable_amount = (double)$data['payment']['payable_amount'];
+            $paid_amount = (double)$data['payment']['paid_amount'];
+            $discount_amount = (double)$data['payment']['discount_amount'];
+            $membership_discount = (double)$data['payment']['membership_discount'];
+            $payment_type = 'full';
+            $dueAmount = $payable_amount - $paid_amount - $discount_amount - $membership_discount;
+            if ($dueAmount > 0){
+                $payment_type = 'partial';
+            }
 
-        if (isset($data['payment']['discount_id'])){
-            $id = $data['payment']['discount_id'];
-            Discount::find($id)->update([
-                'promo_code' => Str::random(4),
-            ]);
-        }
+            $finalTotalAmount = $payable_amount - $discount_amount - $membership_discount;
+            if ($finalTotalAmount < 0) {
+                throw new CustomValidationException('Error.', 422, [
+                    'error' => 'Subtotal cannot be less than zero.',
+                ]);
+            }
 
-        $status = $paid_amount == 0 && $payable_amount != 0 ? PaymentStatus::unpaid->value : PaymentStatus::success->value;
-        $method = $paid_amount == 0 && $payable_amount != 0 ? PaymentMethod::none->value : $data['payment']['method'];
-        $txn_number = '';
-        if (isset($data['payment']['txn_number']))
-            $txn_number = $data['payment']['txn_number'];
-        $reference_number = '';
-        if (isset($data['payment']['reference_number']))
-            $reference_number = $data['payment']['reference_number'];
+            $parkingFee = $payable_amount;
+            $amount = $paid_amount + $discount_amount + $membership_discount;
+            if ($amount > $parkingFee) {
+                throw new CustomValidationException('Error', 422, [
+                    'error' => 'Sum of receiving amount and discount cannot be greater than Parking fees.',
+                ]);
+            }
+            if ($dueAmount < 0) {
+                throw new CustomValidationException('Error.', 422, [
+                    'error' => 'Due amount cannot be less than zero.',
+                ]);
+            }
 
-        $payment = Payment::create([
-            'method' => $method,
-            'paid_amount' => $data['payment']['paid_amount'],
-            'payable_amount' => $data['payment']['payable_amount'],
-            'discount_amount' => $data['payment']['discount_amount'],
-            'membership_discount' => $data['payment']['membership_discount'],
-            'due_amount' => $dueAmount,
-            'payment_type' => $payment_type,
+            if (isset($data['payment']['discount_id'])){
+                $id = $data['payment']['discount_id'];
+                Discount::find($id)->update([
+                    'promo_code' => Str::random(4),
+                ]);
+            }
+
+            $status = $paid_amount == 0 && $payable_amount != 0 ? PaymentStatus::unpaid->value : PaymentStatus::success->value;
+            $method = $paid_amount == 0 && $payable_amount != 0 ? PaymentMethod::none->value : $data['payment']['method'];
+            $txn_number = '';
+            if (isset($data['payment']['txn_number']))
+                $txn_number = $data['payment']['txn_number'];
+            $reference_number = '';
+            if (isset($data['payment']['reference_number']))
+                $reference_number = $data['payment']['reference_number'];
+
+            $payment = Payment::create([
+                'method' => $method,
+                'paid_amount' => $data['payment']['paid_amount'],
+                'payable_amount' => $data['payment']['payable_amount'],
+                'discount_amount' => $data['payment']['discount_amount'],
+                'membership_discount' => $data['payment']['membership_discount'],
+                'due_amount' => $dueAmount,
+                'payment_type' => $payment_type,
 //            'received_by' => auth()->id(),
-            'parking_id' => $model->id,
-            'paid_by_vehicle_id' => $model?->vehicle_id,
-            'transaction_id' => $this->generateTransactionId(),
-            'status' => $status,
-            'reference_number' => $reference_number,
-            'txn_number' => $txn_number,
-        ]);
-
-        PaymentLog::create([
-            'payment_id' => $payment->id,
-            'status' => $payment->status,
-            'method' => $payment->method,
-            'amount' => $payment->paid_amount,
-            'date' => now(),
-        ]);
-
-        $vehicle->update([
-            'status' => ParkingStatus::checked_out->value,
-        ]);
-
-        $item = parent::update($model, $data);
-
-        DB::commit();
-        return [
-            'data' => [
-                'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$payment->transaction_id
-            ]
-        ];
-        //todo
-        if ($payment->method == PaymentMethod::cash->value && $payment->status == PaymentStatus::pending->value){
-            $payment->update([
-                'status'        => PaymentStatus::success->value,
-                'date'        => now(),
+                'parking_id' => $model->id,
+                'paid_by_vehicle_id' => $model?->vehicle_id,
+                'transaction_id' => $this->generateTransactionId(),
+                'status' => $status,
+                'reference_number' => $reference_number,
+                'txn_number' => $txn_number,
             ]);
 
             PaymentLog::create([
@@ -317,31 +290,22 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
                 'date' => now(),
             ]);
 
+            $vehicle->update([
+                'status' => ParkingStatus::checked_out->value,
+            ]);
+
+            $item = parent::update($model, $data);
+
             DB::commit();
             return [
                 'data' => [
                     'redirect_url' => env('CLIENT_URL').'/success?transaction_id='.$payment->transaction_id
                 ]
             ];
+        } catch (Exception $exception){
+            DB::rollBack();
+            throw new CustomValidationException($exception->getMessage(), 422, $exception);
         }
-        //todo
-
-
-        DB::commit();
-
-        $paymentData = [
-            'amount' => $payment->paid_amount,
-            'transaction_id' => $payment->transaction_id,
-        ];
-        if ($payment->paid_amount > 0){
-            return [
-                'data' => [
-                    'redirect_url' => $this->payBySslCommerz($paymentData)
-                ]
-            ];
-        }
-
-        return $item;
     }
 
     public function getAmountToPay($payments): float|int
