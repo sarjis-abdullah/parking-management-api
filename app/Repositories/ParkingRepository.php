@@ -150,36 +150,6 @@ class ParkingRepository extends EloquentBaseRepository implements ParkingInterfa
     }
 
     /**
-     */
-    public function update(\ArrayAccess $model, array $data): \ArrayAccess
-    {
-//        $data['barcode'] = uniqid();
-//        $data['in_time'] = now();
-//        $data['status'] = ParkingStatus::checked_in->value;
-//        DB::beginTransaction();
-//        if (!isset($data['tariff_id'])){
-//            $data['tariff_id'] = Tariff::where('default', true)->orderBy('updated_at', 'desc')->first()->id;
-//        }
-//        $slot = Slot::find($data['slot_id']);
-//
-//        $vehicle = Vehicle::find($model->vehicle_id);
-//        $this->checkVehicleCheckedInToThrowError($vehicle);
-//        if ($slot->status != SlotStatus::occupied->value){
-//            Slot::find($data['slot_id'])->update([
-//                'status' => SlotStatus::occupied->value
-//            ]);
-//            $item = parent::update($model, $data);
-//
-//            DB::commit();
-//            return $item;
-//        } else {
-//            throw new CustomValidationException('Slot is already occupied..', 422, [
-//                'slot' => ['Slot is already occupied.'],
-//            ]);
-//        }
-    }
-
-    /**
      * @throws CustomValidationException
      */
     protected function checkVehicleCheckedInToThrowError($vehicle): void
